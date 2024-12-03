@@ -1,0 +1,16 @@
+release/chatwidget.o
+release/completedordersw.o
+release/flightinfo.o
+release/homewidget.o
+release/main.o
+release/mainwindow.o
+release/uncompletedordersw.o
+release/userinfo.o
+release/walletwindow.o
+release/qrc_qmake_qmake_qm_files.o
+release/moc_flightinfo.o
+release/moc_homewidget.o
+release/moc_mainwindow.o
+release/moc_uncompletedordersw.o
+release/moc_userinfo.o
+release/moc_walletwindow.o
