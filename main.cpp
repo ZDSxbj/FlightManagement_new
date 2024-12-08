@@ -3,7 +3,8 @@
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
- QSqlDatabase dbcon; //数据库
+QSqlDatabase dbcon; //数据库
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
     } else {
         qDebug() << "Success, persondatabase 数据库文件打开成功！";
     }
+
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
     for (const QString &locale : uiLanguages) {

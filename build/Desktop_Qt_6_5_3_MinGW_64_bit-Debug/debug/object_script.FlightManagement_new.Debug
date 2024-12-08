@@ -1,13 +1,16 @@
+debug/buywidget.o
 debug/chatwidget.o
 debug/completedordersw.o
 debug/flightinfo.o
 debug/homewidget.o
 debug/main.o
 debug/mainwindow.o
+debug/someGlobal.o
 debug/uncompletedordersw.o
 debug/userinfo.o
 debug/walletwindow.o
 debug/qrc_qmake_qmake_qm_files.o
+debug/moc_buywidget.o
 debug/moc_flightinfo.o
 debug/moc_homewidget.o
 debug/moc_mainwindow.o

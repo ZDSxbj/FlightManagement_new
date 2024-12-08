@@ -1,23 +1,16 @@
 #include "homewidget.h"
+#include<QTimer>
 #include <algorithm> // 确保包含这个头文件以使用 std::sort
 HomeWidget::HomeWidget(QWidget *parent)
     : QWidget(parent), departureInput(nullptr), destinationInput(nullptr),
     addressListOpt(new QListWidget(this)), addressListOpt2(new QListWidget(this)),
-    datePicker(new QDateEdit(QDateTime::currentDateTime().date(), this)) {
+    datePicker(new QDateEdit(QDateTime::currentDateTime().date(), this))
+{
+    payCheckTimer = new QTimer(this);
+    connect(payCheckTimer, &QTimer::timeout, this, &HomeWidget::checkAndSearchFlights);
 
-    // QSqlDatabase dbcon = QSqlDatabase::addDatabase("QODBC");
-    // dbcon.setHostName("127.0.0.1");
-    // dbcon.setPort(3306);
-    // dbcon.setDatabaseName("Local instance MySQL8");
-    // dbcon.setUserName("root");  // 添加用户名
-    // dbcon.setPassword("ZXJsnd4697");  // 添加密码
-
-    // bool ok = dbcon.open();
-    // if (!ok) {
-    //     qDebug() << "Error, persondatabase 数据库文件打开失败！" << dbcon.lastError().text();
-    // } else {
-    //     qDebug() << "Success, persondatabase 数据库文件打开成功！";
-    // }
+    // 设置定时器时间间隔（例如每500毫秒检查一次）
+    payCheckTimer->start(500);
     contentLayout = new QVBoxLayout(this);
 
     // 地址列表
@@ -262,4 +255,10 @@ void HomeWidget::printFlightInfos()
     scrollContentLayout->update();
 }
 
-
+// 新增的槽函数
+void HomeWidget::checkAndSearchFlights() {
+    if (isPay) {
+        searchFlights();  // 调用 searchFlights 函数
+        isPay = false;    // 置为 false，防止重复调用
+    }
+}

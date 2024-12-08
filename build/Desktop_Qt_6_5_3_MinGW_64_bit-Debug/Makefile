@@ -357,8 +357,13 @@ Makefile: ../../FlightManagement_new.pro ../../../../Qt/6.5.3/mingw_64/mkspecs/w
 		../../../../Qt/6.5.3/mingw_64/mkspecs/features/yacc.prf \
 		../../../../Qt/6.5.3/mingw_64/mkspecs/features/lex.prf \
 		../../FlightManagement_new.pro \
+		../../../../Qt/6.5.3/mingw_64/lib/Qt6Quick.prl \
+		../../../../Qt/6.5.3/mingw_64/lib/Qt6OpenGL.prl \
 		../../../../Qt/6.5.3/mingw_64/lib/Qt6Widgets.prl \
 		../../../../Qt/6.5.3/mingw_64/lib/Qt6Gui.prl \
+		../../../../Qt/6.5.3/mingw_64/lib/Qt6QmlModels.prl \
+		../../../../Qt/6.5.3/mingw_64/lib/Qt6Qml.prl \
+		../../../../Qt/6.5.3/mingw_64/lib/Qt6Network.prl \
 		../../../../Qt/6.5.3/mingw_64/lib/Qt6Sql.prl \
 		../../../../Qt/6.5.3/mingw_64/lib/Qt6Core.prl \
 		../../../../Qt/6.5.3/mingw_64/lib/Qt6EntryPoint.prl \
@@ -653,8 +658,13 @@ Makefile: ../../FlightManagement_new.pro ../../../../Qt/6.5.3/mingw_64/mkspecs/w
 ../../../../Qt/6.5.3/mingw_64/mkspecs/features/yacc.prf:
 ../../../../Qt/6.5.3/mingw_64/mkspecs/features/lex.prf:
 ../../FlightManagement_new.pro:
+../../../../Qt/6.5.3/mingw_64/lib/Qt6Quick.prl:
+../../../../Qt/6.5.3/mingw_64/lib/Qt6OpenGL.prl:
 ../../../../Qt/6.5.3/mingw_64/lib/Qt6Widgets.prl:
 ../../../../Qt/6.5.3/mingw_64/lib/Qt6Gui.prl:
+../../../../Qt/6.5.3/mingw_64/lib/Qt6QmlModels.prl:
+../../../../Qt/6.5.3/mingw_64/lib/Qt6Qml.prl:
+../../../../Qt/6.5.3/mingw_64/lib/Qt6Network.prl:
 ../../../../Qt/6.5.3/mingw_64/lib/Qt6Sql.prl:
 ../../../../Qt/6.5.3/mingw_64/lib/Qt6Core.prl:
 ../../../../Qt/6.5.3/mingw_64/lib/Qt6EntryPoint.prl:

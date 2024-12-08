@@ -7,7 +7,7 @@
 #include <QSpacerItem>
 #include <QSizePolicy>
 #include <QPropertyAnimation>
-
+#include"buywidget.h"
 flightinfo::flightinfo(const FlightData &data, QWidget *parent)
     : QWidget(parent), data(data)
 {
@@ -103,6 +103,7 @@ flightinfo::flightinfo(const FlightData &data, QWidget *parent)
         "color: white;" // 字体颜色为白色
         "border-radius: 20px;" // 圆角按钮
         "font-size: 18px;" // 增大字体
+        "font-weight: bold;" // 字体加粗
         "padding: 10px 20px;" // 增加内边距
         "min-width: 80px;" // 按钮最小宽度
         "border: none;" // 去除边框
@@ -114,6 +115,7 @@ flightinfo::flightinfo(const FlightData &data, QWidget *parent)
         "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #6D6CFF, stop:1 #8E7AFE);" // 按下时更深的渐变色
         "}"
         );
+    detailsButton->setFixedWidth(120); // 固定宽度为 60px
     topLayout->addWidget(detailsButton);
 
     // 连接按钮信号和槽
@@ -144,6 +146,7 @@ void flightinfo::setupDetailsLayout()
         "color: white;" // 字体颜色为白色
         "border-radius: 10px;" // 圆角按钮，边角更小
         "font-size: 14px;" // 较小字体
+        "font-weight: bold;" // 字体加粗
         "padding: 5px 10px;" // 较小内边距
         "width: 60px;" // 按钮最小宽度
         "border: none;" // 去除边框
@@ -216,10 +219,27 @@ void flightinfo::setupDetailsLayout()
         firstClassLayout->addWidget(firstClassPurchaseButton);
         firstClassPurchaseButton->setFixedWidth(90); // 固定宽度为 60px
     }
+    connect(economyPurchaseButton, &QPushButton::clicked, [this]() {
+        BuyWidget *widget = new BuyWidget(data,1);  //后面的数字是机票类型，后来才记得加，有点草率
+        widget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
+        widget->show();
+        qDebug()<<"断点";
+    });
 
+    connect(businessPurchaseButton, &QPushButton::clicked, [this]() {
+        BuyWidget *widget = new BuyWidget(data,2);
+        widget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
+        widget->show();
+    });
+
+    connect(firstClassPurchaseButton, &QPushButton::clicked, [this]() {
+        BuyWidget *widget = new BuyWidget(data,3);
+        widget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
+        widget->show();
+    });
     // 初始化动画对象，作用于容器部件的最大高度
     animation = new QPropertyAnimation(detailsContainer, "maximumHeight", this);
-    animation->setDuration(300);  // 动画持续时间设为300毫秒
+    animation->setDuration(200);  // 动画持续时间设为300毫秒
 
     // 设置初始状态为隐藏
     detailsContainer->setMaximumHeight(0);

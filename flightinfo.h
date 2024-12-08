@@ -12,34 +12,8 @@
 #include <QFrame>
 #include <QPropertyAnimation>
 #include<QPainter>
-struct FlightData {
-    int flight_id;
-    QString flight_number;
-    QString airline;
-    QString airplane_model;
-    QString departure_city;
-    QString departure_airport;
-    QString arrival_city;
-    QString arrival_airport;
-    QString departure_terminal;
-    QString arrival_terminal;
-    QDateTime departure_time;
-    QDateTime arrival_time;
-    QTime duration;
-    bool same_day_arrival;
-    QString status;
-    int economy_seat_capacity;
-    int economy_available_seats;
-    double economy_price;
-    int business_seat_capacity;
-    int business_available_seats;
-    double business_price;
-    int first_class_seat_capacity;
-    int first_class_available_seats;
-    double first_class_price;
-    QString refund_policy;
-    QString baggage_policy;
-};
+#include"buywidget.h"
+#include "FlightData.h"
 
 
 class flightinfo : public QWidget {
@@ -83,6 +57,9 @@ private:
     void paintEvent(QPaintEvent *event) override {
         QPainter painter(this);
 
+        // 启用抗锯齿
+        painter.setRenderHint(QPainter::Antialiasing);
+
         // 绘制渐变背景
         QLinearGradient gradient(0, 0, 0, height());
         gradient.setColorAt(0, QColor(255, 255, 255));  // 白色
@@ -90,7 +67,14 @@ private:
 
         painter.setBrush(gradient);
         painter.setPen(Qt::NoPen);  // 不需要边框
-        painter.drawRect(0, 0, width(), height());  // 填充背景
+
+        // 创建带圆角的矩形路径
+        QPainterPath path;
+        int radius = 20; // 圆角半径
+        path.addRoundedRect(0, 0, width(), height(), radius, radius);  // 添加圆角矩形
+
+        // 绘制带圆角的背景
+        painter.drawPath(path);
 
         QWidget::paintEvent(event);  // 确保子控件正确绘制
     }

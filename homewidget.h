@@ -19,6 +19,7 @@
 #include<QSqlQuery>
 #include <QMessageBox> // 引入 QMessageBox
 #include"flightinfo.h"
+#include "someGlobal.h"
 class MyEventFilter : public QObject {
     Q_OBJECT
 signals:
@@ -46,6 +47,8 @@ private slots:
     void toggleAddressListVisibility(QLineEdit *input, QListWidget *list);
     void setAddressFromList(QLineEdit *input, QListWidget *list, QListWidgetItem *item);
     void swapDepartureAndDestination();
+    void searchFlights();
+    void checkAndSearchFlights();  // 新增的槽函数，检查 isPay 并调用 searchFlights
 
 private:
     QLineEdit *departureInput;
@@ -62,8 +65,8 @@ private:
     MyEventFilter *filter2;
 
     QVector<flightinfo*> flightInfoWidgets; // 存储flightinfo对象的指针
-    // QSqlDatabase dbcon; //数据库
-    void searchFlights();
+
+    QTimer *payCheckTimer;    // 定时器，用于检查 isPay 状态
     void clearFlightResults();
     void printFlightInfos();  //添加航班页面在滚动区域
 };

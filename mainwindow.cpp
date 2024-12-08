@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent)
     homeButton = new QPushButton("首页"); // 创建“首页”按钮
     homeButton->setStyleSheet(mainButtonStyle);
     buttonGroup->addButton(homeButton, buttonGroup->buttons().size()); // 将按钮添加到按钮组
-    orderButton = new QPushButton("订单");// 创建“订单”按钮
+    orderButton = new QPushButton("出行服务");// 创建“订单”按钮
     orderButton->setStyleSheet(mainButtonStyle);
     buttonGroup->addButton(orderButton, buttonGroup->buttons().size()); // 将按钮添加到按钮组
     myButton =new QPushButton("我的");// 创建“我的”按钮，并允许展开/折叠
@@ -97,11 +97,11 @@ MainWindow::MainWindow(QWidget *parent)
     orderButtonsContainer = new QWidget;
     QVBoxLayout *orderButtonsLayout = new QVBoxLayout(orderButtonsContainer);
     orderButtonsLayout->setContentsMargins(0, 0, 0, 0); // 设置内边距为0
-    uncompletedButton =new QPushButton("未完成订单"); // 创建“未完成订单”按钮
+    uncompletedButton =new QPushButton("我的订单"); // 创建“未完成订单”按钮
     uncompletedButton->setStyleSheet(subButtonStyle);
     orderbuttonGroup->addButton(uncompletedButton, orderbuttonGroup->buttons().size()); // 将按钮添加到按钮组
     orderButtonsLayout->addWidget(uncompletedButton); // 添加“未完成订单”按钮到子菜单
-    completedButton =new QPushButton("已完成订单"); // 创建“已完成订单”按钮
+    completedButton =new QPushButton("我的车票"); // 创建“已完成订单”按钮
     completedButton->setStyleSheet(subButtonStyle);
     orderbuttonGroup->addButton(completedButton, orderbuttonGroup->buttons().size()); // 将按钮添加到按钮组
     orderButtonsLayout->addWidget(completedButton); // 添加“已完成订单”按钮到子菜单
@@ -270,10 +270,10 @@ void MainWindow::switchPage(int index) {
         functitle->setText("首页");
         break;
     case 1:
-        functitle->setText("未完成订单");
+        functitle->setText("我的订单");
         break;
     case 2:
-        functitle->setText("已完成订单");
+        functitle->setText("我的车票");
         break;
     case 3:
         functitle->setText("个人信息");

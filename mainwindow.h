@@ -19,6 +19,7 @@
 #include "userinfo.h"
 #include "walletwindow.h"
 #include "chatwidget.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
