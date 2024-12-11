@@ -78,6 +78,7 @@ HomeWidget::HomeWidget(QWidget *parent)
     // 下拉地址列表
     addressListOpt->addItems(addressList);
     addressListOpt->setWindowFlags(Qt::ToolTip);
+
     addressListOpt->hide();
 
     addressListOpt2->addItems(addressList);

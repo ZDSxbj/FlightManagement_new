@@ -33,12 +33,13 @@ MainWindow::MainWindow(QWidget *parent)
         "    font-size: 18px;"  // 主按钮文字稍大
         "    font-weight: bold;" // 字体加粗
         "    text-align: center;"
+        "    width: 85px;" // 设置主按钮的宽度为200px
         "}"
         "QPushButton:hover {"
         "    background-color: rgba(255, 255, 255, 0.2);" // 悬停时半透明白色背景
         "}"
         "QPushButton:checked {"
-        "    background-color: rgba(255, 255, 255, 0.4);" // 激活状态更明显
+        "    background-color: rgba(255, 255, 255, 0.3);" // 激活状态更明显
         "}"
         "QPushButton:pressed {"
         "    background-color: rgba(255, 255, 255, 0.6);" // 按下时更深的透明白
@@ -49,11 +50,12 @@ MainWindow::MainWindow(QWidget *parent)
         "    color: white;"  // 图标和文字颜色
         "    background-color: transparent;" // 默认透明背景
         "    border: none;"  // 无边框
-        "    border-radius: 20px;" // 圆形按钮效果（子按钮较小）
+        "    border-radius: 12px;" // 圆形按钮效果（子按钮较小）
         "    padding: 10px;"  // 子按钮内边距较小
         "    font-size: 14px;"  // 子按钮文字稍小
         "    font-weight: bold;" // 字体加粗
         "    text-align: center;"
+
         "}"
         "QPushButton:hover {"
         "    background-color: rgba(255, 255, 255, 0.15);" // 悬停时半透明白色背景稍浅
@@ -88,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
     myButton =new QPushButton("我的");// 创建“我的”按钮，并允许展开/折叠
     myButton->setStyleSheet(mainButtonStyle);
     buttonGroup->addButton(myButton, buttonGroup->buttons().size()); // 将按钮添加到按钮组
-    contactButton =new QPushButton("联系客服"); // 创建“联系客服”按钮
+    contactButton =new QPushButton("消息2"); // 创建“联系客服”按钮
     contactButton->setStyleSheet(mainButtonStyle);
     buttonGroup->addButton(contactButton, buttonGroup->buttons().size()); // 将按钮添加到按钮组
 
@@ -98,6 +100,7 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout *orderButtonsLayout = new QVBoxLayout(orderButtonsContainer);
     orderButtonsLayout->setContentsMargins(0, 0, 0, 0); // 设置内边距为0
     uncompletedButton =new QPushButton("我的订单"); // 创建“未完成订单”按钮
+
     uncompletedButton->setStyleSheet(subButtonStyle);
     orderbuttonGroup->addButton(uncompletedButton, orderbuttonGroup->buttons().size()); // 将按钮添加到按钮组
     orderButtonsLayout->addWidget(uncompletedButton); // 添加“未完成订单”按钮到子菜单
@@ -120,7 +123,8 @@ MainWindow::MainWindow(QWidget *parent)
     mybuttonGroup->addButton(walletButton, mybuttonGroup->buttons().size()); // 将按钮添加到按钮组
     myButtonsLayout->addWidget(walletButton); // 添加“钱包”按钮到子菜单
     myButtonsContainer->setVisible(false); // 默认隐藏子菜单
-
+    // uncompletedButton->setMinimumSize(80, 40); // 设置最小宽度和高度
+    // completedButton->setMinimumSize(80, 40);
     // // 添加上方占3份的伸展器
     // 添加上方占3份的拉伸器
     menuLayout->addStretch(3);
@@ -144,9 +148,31 @@ MainWindow::MainWindow(QWidget *parent)
     myMenuAnimation->setStartValue(0);
     myMenuAnimation->setEndValue(200); // 根据实际内容调整高度
 
+
+    // 在构造函数中添加以下代码：
+    buttonGroup->setExclusive(true); // 设置按钮组为互斥模式
+    orderbuttonGroup->setExclusive(true);
+    mybuttonGroup->setExclusive(true);
+    homeButton->setCheckable(true);
+    orderButton->setCheckable(true);
+    myButton->setCheckable(true);
+    contactButton->setCheckable(true);
+    uncompletedButton->setCheckable(true);
+    completedButton->setCheckable(true);
+    myinfoButton->setCheckable(true);
+    walletButton->setCheckable(true);
      // 连接按钮的 clicked 信号到对应的槽函数，用于控制菜单展开和收起
-    connect(orderButton, &QPushButton::clicked, this, &MainWindow::toggleOrderMenu);
-    connect(myButton, &QPushButton::clicked, this, &MainWindow::toggleMyMenu);
+    connect(orderButton, &QPushButton::clicked, this, [this]() {
+        orderButton->setChecked(true);
+
+        toggleOrderMenu();
+           });
+    connect(myButton, &QPushButton::clicked, this, [this]() {
+        myButton->setChecked(true);
+        walletButton->setChecked(false);
+        myinfoButton->setChecked(false);
+        toggleMyMenu();
+            });
 
 
     // 右侧内容区域包含标题栏和QStackedWidget
@@ -162,7 +188,7 @@ MainWindow::MainWindow(QWidget *parent)
         );
     QHBoxLayout *titlelayout = new QHBoxLayout(titleBar);
 
-    maintitle=new QLabel("航班管理系统");
+    maintitle=new QLabel("航班管理系统（用户）");
     maintitle->setStyleSheet(
         "font-size: 30px;"           // 主标题字体更大
         "font-weight: bold;"         // 设置为粗体
@@ -186,12 +212,83 @@ MainWindow::MainWindow(QWidget *parent)
 
     titlelayout->addStretch(); // 使应用名称靠左对齐
 
-    personButton=new QPushButton("个人");
+    // personButton样式
+    QSqlQuery query;
+
+    if (query.exec(QString("SELECT username FROM users WHERE ID_card='%1'").arg(curUser)) && query.next()) {
+        QString userName = query.value(0).toString();
+
+        // 创建按钮并设置其文本
+        personButton = new QPushButton(userName + "，您好", this);
+    } else {
+        // 如果查询失败或者没有找到用户，设置默认文本
+        personButton = new QPushButton("用户，您好", this);
+        qDebug() << "Database query failed or user not found:" << query.lastError();
+    }
+
+    personButton->setStyleSheet("QPushButton {"
+                                "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #7F7EFF, stop:1 #9E8CFE);"
+                                "color: white;"
+                                "border-radius: 8px;"
+                                "font-size: 12px;"
+                                "font-weight: bold;"
+                                "padding: 3px 8px;"
+                                "width: 80px;"
+                                "border: none;"
+                                "}"
+                                "QPushButton:hover {"
+                                "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #9E8CFE, stop:1 #BCA4FF);"
+                                "}"
+                                "QPushButton:pressed {"
+                                "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #6D6CFF, stop:1 #8E7AFE);"
+                                "}");
+
+    // 将按钮添加到布局中
     titlelayout->addWidget(personButton); // 个人按钮
-    switchButton=new QPushButton("切换账号");
+    personButton->installEventFilter(this);
+    // switchButton样式
+    switchButton = new QPushButton("切换账号");
+    switchButton->setStyleSheet("QPushButton {"
+                                "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #FF9800, stop:1 #FFB74D);"
+                                "color: white;"
+                                "border-radius: 8px;"
+                                "font-size: 12px;"
+                                "font-weight: bold;"
+                                "padding: 3px 8px;"
+                                "width: 50px;"
+                                "border: none;"
+                                "}"
+                                "QPushButton:hover {"
+                                "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #FFB74D, stop:1 #FFCC80);"
+                                "}"
+                                "QPushButton:pressed {"
+                                "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #F57C00, stop:1 #FF6F00);"
+                                "}");
+
+    // 将按钮添加到布局中
     titlelayout->addWidget(switchButton); // 切换账号按钮
-    noticeButton=new QPushButton("通知");
-    titlelayout->addWidget(noticeButton); //通知按钮
+
+    // noticeButton样式
+    noticeButton = new QPushButton("通知");
+    noticeButton->setStyleSheet("QPushButton {"
+                                "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #7F7EFF, stop:1 #9E8CFE);"
+                                "color: white;"
+                                "border-radius: 8px;"
+                                "font-size: 12px;"
+                                "font-weight: bold;"
+                                "padding: 3px 8px;"
+                                "width: 50px;"
+                                "border: none;"
+                                "}"
+                                "QPushButton:hover {"
+                                "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #9E8CFE, stop:1 #BCA4FF);"
+                                "}"
+                                "QPushButton:pressed {"
+                                "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #6D6CFF, stop:1 #8E7AFE);"
+                                "}");
+
+    // 将按钮添加到布局中
+    titlelayout->addWidget(noticeButton); // 通知按钮
     contentLayout->addWidget(titleBar);
 
 
@@ -205,13 +302,41 @@ MainWindow::MainWindow(QWidget *parent)
     stackedWidget->addWidget(walletWindow);
     stackedWidget->addWidget(chatPage);
     stackedWidget->setCurrentIndex(0); // 假设首页是第一页，索引为0
-    // 在构造函数中添加信号与槽的连接
-    connect(homeButton, &QPushButton::clicked, this, [this]() { switchPage(0); });
-    connect(uncompletedButton, &QPushButton::clicked, this, [this]() { switchPage(1); });
-    connect(completedButton, &QPushButton::clicked, this, [this]() { switchPage(2); });
-    connect(myinfoButton, &QPushButton::clicked, this, [this]() { switchPage(3); });
-    connect(walletButton, &QPushButton::clicked, this, [this]() { switchPage(4); });
-    connect(contactButton, &QPushButton::clicked, this, [this]() { switchPage(5); });
+    // 添加信号与槽的连接，并确保点击时按钮变为 checked 状态
+    connect(homeButton, &QPushButton::clicked, this, [this]() {
+        myButtonsContainer->setVisible(false);
+        orderButtonsContainer->setVisible(false);
+        homeButton->setChecked(true);
+        switchPage(0);
+    });
+
+    connect(uncompletedButton, &QPushButton::clicked, this, [this]() {
+        uncompletedButton->setChecked(true);
+        switchPage(1);
+    });
+
+    connect(completedButton, &QPushButton::clicked, this, [this]() {
+        completedButton->setChecked(true);
+        switchPage(2);
+    });
+
+    connect(myinfoButton, &QPushButton::clicked, this, [this]() {
+        myinfoButton->setChecked(true);
+        switchPage(3);
+    });
+
+    connect(walletButton, &QPushButton::clicked, this, [this]() {
+        walletButton->setChecked(true);
+        switchPage(4);
+    });
+
+    connect(contactButton, &QPushButton::clicked, this, [this]() {
+        myButtonsContainer->setVisible(false);
+        orderButtonsContainer->setVisible(false);
+        contactButton->setChecked(true);
+        switchPage(5);
+    });
+    homeButton->setChecked(true);  //初始化时先选中homeButton
     contentLayout->addWidget(stackedWidget);
 
     // 将菜单容器添加到主布局中，而不是直接添加 menuLayout
@@ -234,13 +359,16 @@ void MainWindow::toggleOrderMenu() {
         orderMenuAnimation->setDirection(QAbstractAnimation::Backward);
         orderMenuAnimation->start();
         orderButtonsContainer->setVisible(false);
+
     } else {
         // 如果菜单不可见，则执行展开动画
         orderMenuAnimation->setDirection(QAbstractAnimation::Forward);
         orderMenuAnimation->start();
         orderButtonsContainer->setVisible(true);
         myButtonsContainer->setVisible(false); // 确保一次只展开一个子菜单
+
     }
+
 }
 
 /// @brief 切换我的菜单的可见性，并执行展开或收起动画
@@ -258,6 +386,39 @@ void MainWindow::toggleMyMenu() {
         orderButtonsContainer->setVisible(false); // 确保一次只展开一个子菜单
     }
 }
+
+void MainWindow::showUserInfo() {
+    // 假设 curUser 包含当前用户的 ID_card
+    QString idCard = curUser;
+    QSqlQuery query;
+    query.exec(QString("SELECT username, phone, email FROM users WHERE ID_card='%1'").arg(idCard));
+
+    if (query.next()) {
+        QString userInfo = QString(
+                               "姓名: %1\n"
+                               "身份证号码: %2\n"
+                               "电话号码: %3\n"
+                               "邮箱: %4")
+                               .arg(query.value(0).toString())
+                               .arg(curUser)
+                               .arg(query.value(1).toString())
+                               .arg(query.value(2).toString());
+
+        // 获取鼠标位置并偏移一点，避免遮挡按钮
+        QPoint globalPos = QCursor::pos();
+        globalPos += QPoint(20, 20);
+        // 获取按钮的全局位置并计算提示框位置（按钮正下方）
+        QPoint buttonBottomLeft = personButton->mapToGlobal(QPoint(0, personButton->height()));
+
+        // 显示工具提示
+        QToolTip::showText(buttonBottomLeft, userInfo, personButton);
+    }
+    else {
+        // 如果查询失败，处理错误
+        qDebug() << "Database query failed:" << query.lastError();
+    }
+}
+
 
 /// @brief 根据索引切换到对应的页面
 /// @param index QStackedWidget 的页面索引

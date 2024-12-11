@@ -12,6 +12,7 @@
 #include <QScrollArea>
 #include <QButtonGroup>
 #include <QPropertyAnimation>
+#include <QToolTip>
 // 包含所有自定义窗口部件的头文件
 #include "homewidget.h"
 #include "uncompletedordersw.h"
@@ -20,6 +21,7 @@
 #include "walletwindow.h"
 #include "chatwidget.h"
 
+#include "someGlobal.h"
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -67,14 +69,24 @@ private:
     UserInfo *userInfoPage;
     WalletWindow *walletWindow;
     ChatWidget *chatPage;
-
+    QString curusername;
     void switchPage(int index); //切换页面函数
+    bool eventFilter(QObject *obj, QEvent *event) override {
+        if (obj == personButton && event->type() == QEvent::Enter) {
+            showUserInfo();
+            return true;
+        }
+        return QWidget::eventFilter(obj, event);
+    }
 
 private slots:
     // @brief 切换订单菜单的可见性，并执行展开或收起动画
     void toggleOrderMenu();
     // @brief 切换我的菜单的可见性，并执行展开或收起动画
     void toggleMyMenu();
+
+    //简单的显示个人信息
+    void showUserInfo();
 
 };
 #endif // MAINWINDOW_H

@@ -14,12 +14,16 @@ SOURCES += \
     chatwidget.cpp \
     completedordersw.cpp \
     flightinfo.cpp \
+    flightmngwidget.cpp \
     homewidget.cpp \
     main.cpp \
     mainwindow.cpp \
+    mainwindowmng.cpp \
     someGlobal.cpp \
     uncompletedordersw.cpp \
     userinfo.cpp \
+    usermnginfo.cpp \
+    usermngwidget.cpp \
     walletwindow.cpp
 
 HEADERS += \
@@ -28,11 +32,16 @@ HEADERS += \
     chatwidget.h \
     completedordersw.h \
     flightinfo.h \
+    flightmngwidget.h \
     homewidget.h \
     mainwindow.h \
+    mainwindowmng.h \
     someGlobal.h \
     uncompletedordersw.h \
+    userData.h \
     userinfo.h \
+    usermnginfo.h \
+    usermngwidget.h \
     walletwindow.h
 
 FORMS += \

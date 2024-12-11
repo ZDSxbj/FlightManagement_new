@@ -222,6 +222,7 @@ void flightinfo::setupDetailsLayout()
     connect(economyPurchaseButton, &QPushButton::clicked, [this]() {
         BuyWidget *widget = new BuyWidget(data,1);  //后面的数字是机票类型，后来才记得加，有点草率
         widget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
+        widget->setWindowFlags(widget->windowFlags() | Qt::WindowStaysOnTopHint);
         widget->show();
         qDebug()<<"断点";
     });
@@ -229,12 +230,14 @@ void flightinfo::setupDetailsLayout()
     connect(businessPurchaseButton, &QPushButton::clicked, [this]() {
         BuyWidget *widget = new BuyWidget(data,2);
         widget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
+        widget->setWindowFlags(widget->windowFlags() | Qt::WindowStaysOnTopHint);
         widget->show();
     });
 
     connect(firstClassPurchaseButton, &QPushButton::clicked, [this]() {
         BuyWidget *widget = new BuyWidget(data,3);
         widget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
+        widget->setWindowFlags(widget->windowFlags() | Qt::WindowStaysOnTopHint);
         widget->show();
     });
     // 初始化动画对象，作用于容器部件的最大高度
