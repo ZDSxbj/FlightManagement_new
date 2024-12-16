@@ -42,7 +42,9 @@ HomeWidget::HomeWidget(QWidget *parent)
 
     connect(filter, &MyEventFilter::clicked, this,
             [=]() { toggleAddressListVisibility(departureInput, addressListOpt); });
-
+    // 连接失去焦点信号到隐藏地址列表的槽。
+    connect(filter, &MyEventFilter::focusOut, this,
+            [=]() { hideAddressListIfApplicable(departureInput); });
     connect(addressListOpt, &QListWidget::itemClicked, this,
             [=](QListWidgetItem *item) { setAddressFromList(departureInput, addressListOpt, item); });
 
@@ -60,7 +62,8 @@ HomeWidget::HomeWidget(QWidget *parent)
 
     connect(addressListOpt2, &QListWidget::itemClicked, this,
             [=](QListWidgetItem *item) { setAddressFromList(destinationInput, addressListOpt2, item); });
-
+    connect(filter2, &MyEventFilter::focusOut, this,
+            [=]() { hideAddressListIfApplicable(destinationInput); });
     QPushButton *switchButton = new QPushButton("切换", this);
     queryLayout->addWidget(switchButton, 0, 2);
     connect(switchButton, &QPushButton::clicked, this, &HomeWidget::swapDepartureAndDestination);
@@ -112,6 +115,13 @@ void HomeWidget::setAddressFromList(QLineEdit *input, QListWidget *list, QListWi
     list->hide();
 }
 
+void HomeWidget::hideAddressListIfApplicable(QLineEdit *input) {
+    if (input == departureInput) {
+        addressListOpt->hide();
+    } else if (input == destinationInput) {
+        addressListOpt2->hide();
+    }
+}
 void HomeWidget::swapDepartureAndDestination() {
     QString temp = departureInput->text();
     departureInput->setText(destinationInput->text());
@@ -129,12 +139,13 @@ void HomeWidget::clearFlightResults()
         delete item->widget(); // 删除部件
         delete item;           // 删除布局项
     }
+
 }
 
 //查找航班
 void HomeWidget::searchFlights()
 {
-    qDebug() << "正确进入函数";
+
 
     // 获取用户输入的值
     QString departureCity = departureInput->text().trimmed();;
@@ -220,6 +231,7 @@ void HomeWidget::searchFlights()
     if(flightInfoWidgets.size()==0){
         // 弹出提示窗口
         QMessageBox::information(this, "提示", "对不起，未找到符合条件的记录。");
+        return ;
     }
     printFlightInfos();
 }
@@ -248,12 +260,12 @@ void HomeWidget::printFlightInfos()
     // 将排序后的航班信息部件添加到滚动页面布局中
     for (const auto& flightInfo : sortedFlightInfoWidgets) {
 
-        flightInfo->update();  // 强制刷新样式
+        // flightInfo->update();  // 强制刷新样式
         scrollContentLayout->addWidget(flightInfo);
     }
 
-    // 更新布局以反映新增加的部件
-    scrollContentLayout->update();
+    // // 更新布局以反映新增加的部件
+    // scrollContentLayout->update();
 }
 
 // 新增的槽函数

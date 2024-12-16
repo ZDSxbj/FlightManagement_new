@@ -1,7 +1,11 @@
 release/buywidget.o
+release/chatmanager.o
 release/chatwidget.o
 release/completedordersw.o
+release/emojidialog.o
+release/evaluationdialog.o
 release/flightinfo.o
+release/flightinfomng.o
 release/flightmngwidget.o
 release/homewidget.o
 release/main.o
@@ -14,8 +18,14 @@ release/usermnginfo.o
 release/usermngwidget.o
 release/walletwindow.o
 release/qrc_qmake_qmake_qm_files.o
+release/moc_MyEventFilter.o
 release/moc_buywidget.o
+release/moc_chatmanager.o
+release/moc_chatwidget.o
+release/moc_emojidialog.o
+release/moc_evaluationdialog.o
 release/moc_flightinfo.o
+release/moc_flightinfomng.o
 release/moc_flightmngwidget.o
 release/moc_homewidget.o
 release/moc_mainwindow.o

@@ -12,6 +12,7 @@
 #include <QFrame>
 #include <QPropertyAnimation>
 #include<QPainter>
+
 #include"buywidget.h"
 #include "FlightData.h"
 
@@ -110,9 +111,7 @@ private:
     QLabel *firstClassAvailableSeatsLabel;
     QLabel *firstClassPriceLabel;
 
-    QPushButton *economyPurchaseButton;
-    QPushButton *businessPurchaseButton;
-    QPushButton *firstClassPurchaseButton;
+
 
     // 动画相关成员
     QPropertyAnimation *animation;  // 动画对象

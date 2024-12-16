@@ -173,10 +173,17 @@ void flightinfo::setupDetailsLayout()
         QLabel *economyPriceLabel = new QLabel("价格: " + QString::number(data.economy_price));
         economyLayout->addWidget(economyPriceLabel);
 
-        economyPurchaseButton = new QPushButton("购买");
+        QPushButton *economyPurchaseButton = new QPushButton("购买");
         economyLayout->addWidget(economyPurchaseButton);
         economyPurchaseButton->setFixedWidth(90); // 固定宽度为 60px
         economyPurchaseButton->setStyleSheet(buttonStyle);
+
+        connect(economyPurchaseButton, &QPushButton::clicked, [this]() {
+            BuyWidget *widget = new BuyWidget(data,1);  //后面的数字是机票类型，后来才记得加，有点草率
+            widget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
+            widget->setWindowFlags(widget->windowFlags() | Qt::WindowStaysOnTopHint);
+            widget->show();
+        });
     }
 
     // 商务舱信息
@@ -193,11 +200,17 @@ void flightinfo::setupDetailsLayout()
         QLabel *businessPriceLabel = new QLabel("价格: " + QString::number(data.business_price));
         businessLayout->addWidget(businessPriceLabel);
 
-        businessPurchaseButton = new QPushButton("购买");
+        QPushButton *businessPurchaseButton = new QPushButton("购买");
         businessLayout->addWidget(businessPurchaseButton);
 
         businessPurchaseButton ->setStyleSheet(buttonStyle);
         businessPurchaseButton->setFixedWidth(90); // 固定宽度为 60px
+        connect(businessPurchaseButton, &QPushButton::clicked, [this]() {
+            BuyWidget *widget = new BuyWidget(data,2);
+            widget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
+            widget->setWindowFlags(widget->windowFlags() | Qt::WindowStaysOnTopHint);
+            widget->show();
+        });
     }
 
     // 头等舱信息
@@ -214,32 +227,23 @@ void flightinfo::setupDetailsLayout()
         QLabel *firstClassPriceLabel = new QLabel("价格: " + QString::number(data.first_class_price));
         firstClassLayout->addWidget(firstClassPriceLabel);
 
-        firstClassPurchaseButton = new QPushButton("购买");
+        QPushButton *firstClassPurchaseButton = new QPushButton("购买");
         firstClassPurchaseButton ->setStyleSheet(buttonStyle);
         firstClassLayout->addWidget(firstClassPurchaseButton);
         firstClassPurchaseButton->setFixedWidth(90); // 固定宽度为 60px
+        connect(firstClassPurchaseButton, &QPushButton::clicked, [this]() {
+            BuyWidget *widget = new BuyWidget(data,3);
+            widget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
+            widget->setWindowFlags(widget->windowFlags() | Qt::WindowStaysOnTopHint);
+            widget->show();
+        });
+
     }
-    connect(economyPurchaseButton, &QPushButton::clicked, [this]() {
-        BuyWidget *widget = new BuyWidget(data,1);  //后面的数字是机票类型，后来才记得加，有点草率
-        widget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
-        widget->setWindowFlags(widget->windowFlags() | Qt::WindowStaysOnTopHint);
-        widget->show();
-        qDebug()<<"断点";
-    });
 
-    connect(businessPurchaseButton, &QPushButton::clicked, [this]() {
-        BuyWidget *widget = new BuyWidget(data,2);
-        widget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
-        widget->setWindowFlags(widget->windowFlags() | Qt::WindowStaysOnTopHint);
-        widget->show();
-    });
 
-    connect(firstClassPurchaseButton, &QPushButton::clicked, [this]() {
-        BuyWidget *widget = new BuyWidget(data,3);
-        widget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
-        widget->setWindowFlags(widget->windowFlags() | Qt::WindowStaysOnTopHint);
-        widget->show();
-    });
+
+
+
     // 初始化动画对象，作用于容器部件的最大高度
     animation = new QPropertyAnimation(detailsContainer, "maximumHeight", this);
     animation->setDuration(200);  // 动画持续时间设为300毫秒

@@ -90,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
     myButton =new QPushButton("我的");// 创建“我的”按钮，并允许展开/折叠
     myButton->setStyleSheet(mainButtonStyle);
     buttonGroup->addButton(myButton, buttonGroup->buttons().size()); // 将按钮添加到按钮组
-    contactButton =new QPushButton("消息2"); // 创建“联系客服”按钮
+    contactButton =new QPushButton("消息"); // 创建“联系客服”按钮
     contactButton->setStyleSheet(mainButtonStyle);
     buttonGroup->addButton(contactButton, buttonGroup->buttons().size()); // 将按钮添加到按钮组
 
@@ -330,10 +330,20 @@ MainWindow::MainWindow(QWidget *parent)
         switchPage(4);
     });
 
+    // 初始化按钮文本（需要实现 queryUserUnreadCount 方法）
+    int unreadCount = queryUserUnreadCount(curUser);
+    if (unreadCount > 0) {
+        contactButton->setText(tr("消息 (%1)").arg(unreadCount));
+    }
     connect(contactButton, &QPushButton::clicked, this, [this]() {
         myButtonsContainer->setVisible(false);
         orderButtonsContainer->setVisible(false);
         contactButton->setChecked(true);
+        // 更新按钮文本为默认文本 "消息"
+        contactButton->setText(tr("消息"));
+
+        // 清除用户的未读消息计数（需要实现 resetUserUnreadCount 方法）
+        resetUserUnreadCount(curUser);
         switchPage(5);
     });
     homeButton->setChecked(true);  //初始化时先选中homeButton
@@ -451,3 +461,25 @@ void MainWindow::switchPage(int index) {
     }
 }
 
+int MainWindow::queryUserUnreadCount(const QString &userId)
+{
+    QSqlQuery query;
+    query.prepare("SELECT user_unread_count FROM unread_counts WHERE user_id = :id");
+    query.bindValue(":id", userId);
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();
+    }
+    return 0; // 如果没有找到记录或者有其他错误则返回0
+}
+
+void MainWindow::resetUserUnreadCount(const QString &userId)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE unread_counts SET user_unread_count = 0 WHERE user_id = :id");
+    query.bindValue(":id", userId);
+
+    if (!query.exec()) {
+        // 错误处理...
+    }
+}

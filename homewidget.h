@@ -20,23 +20,7 @@
 #include <QMessageBox> // 引入 QMessageBox
 #include"flightinfo.h"
 #include "someGlobal.h"
-class MyEventFilter : public QObject {
-    Q_OBJECT
-signals:
-    void clicked();
-public:
-    explicit MyEventFilter(QObject *parent = nullptr) : QObject(parent) {}
-
-protected:
-    bool eventFilter(QObject *obj, QEvent *event) override{
-        if (event->type() == QEvent::MouseButtonPress) {
-            emit clicked();
-            return true; // 捕获了事件，不再传递给其他对象
-        }
-        return QObject::eventFilter(obj, event); // 默认处理方式
-    }
-};
-
+#include "MyEventFilter.h"
 class HomeWidget : public QWidget {
     Q_OBJECT
 
@@ -50,11 +34,12 @@ private slots:
     void searchFlights();
     void checkAndSearchFlights();  // 新增的槽函数，检查 isPay 并调用 searchFlights
 
+    void hideAddressListIfApplicable(QLineEdit *input);  //隐藏
+
 private:
     QLineEdit *departureInput;
     QLineEdit *destinationInput;
-    QListWidget *addressListOpt;
-    QListWidget *addressListOpt2;
+
     QDateEdit *datePicker;
     QVBoxLayout *contentLayout;
     QScrollArea *scrollArea;
@@ -65,7 +50,8 @@ private:
     MyEventFilter *filter2;
 
     QVector<flightinfo*> flightInfoWidgets; // 存储flightinfo对象的指针
-
+    QListWidget *addressListOpt;
+    QListWidget *addressListOpt2;
     QTimer *payCheckTimer;    // 定时器，用于检查 isPay 状态
     void clearFlightResults();
     void printFlightInfos();  //添加航班页面在滚动区域

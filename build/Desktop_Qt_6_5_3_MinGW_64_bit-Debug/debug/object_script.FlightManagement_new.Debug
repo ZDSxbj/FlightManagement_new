@@ -1,7 +1,11 @@
 debug/buywidget.o
+debug/chatmanager.o
 debug/chatwidget.o
 debug/completedordersw.o
+debug/emojidialog.o
+debug/evaluationdialog.o
 debug/flightinfo.o
+debug/flightinfomng.o
 debug/flightmngwidget.o
 debug/homewidget.o
 debug/main.o
@@ -14,8 +18,14 @@ debug/usermnginfo.o
 debug/usermngwidget.o
 debug/walletwindow.o
 debug/qrc_qmake_qmake_qm_files.o
+debug/moc_MyEventFilter.o
 debug/moc_buywidget.o
+debug/moc_chatmanager.o
+debug/moc_chatwidget.o
+debug/moc_emojidialog.o
+debug/moc_evaluationdialog.o
 debug/moc_flightinfo.o
+debug/moc_flightinfomng.o
 debug/moc_flightmngwidget.o
 debug/moc_homewidget.o
 debug/moc_mainwindow.o

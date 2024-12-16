@@ -642,7 +642,7 @@ bool BuyWidget::recordTransaction(double amount) {
     QString username = userQuery.value("username").toString();
     QSqlQuery transactionQuery;
     transactionQuery.prepare("INSERT INTO wallet_transactions (username, transaction_type, amount, transaction_time, flight_number, departure_city, destination_city, ID_card) "
-                             "VALUES (:username, '购票', :amount, CURRENT_TIMESTAMP, :flightNumber, :departureCity, :destinationCity, :IDCard)");
+                             "VALUES (:username, 'Buy', :amount, CURRENT_TIMESTAMP, :flightNumber, :departureCity, :destinationCity, :IDCard)");
     transactionQuery.bindValue(":username", username);
     transactionQuery.bindValue(":amount", amount);
     transactionQuery.bindValue(":flightNumber", data.flight_number);

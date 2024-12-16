@@ -1,26 +1,39 @@
 #ifndef USERINFO_H
 #define USERINFO_H
 
-#include <QMainWindow>
 #include <QWidget>
-
-#include <QWidget>
-#include <QVBoxLayout>
 #include <QLabel>
-#include <QLineEdit>
 #include <QPushButton>
-
+#include "someGlobal.h"
 class UserInfo : public QWidget {
     Q_OBJECT
+
 public:
-    UserInfo(QWidget *parent = nullptr);
-    ~UserInfo(){}
+    explicit UserInfo(QWidget *parent = nullptr);
+    ~UserInfo();
+
+    void loadUserData(const QString &username); // 加载用户数据
+
+private slots:
+    void onEditAvatar();
+    void onEditPhone();
+    void onEditEmail();
+    void onEditGender();
+    void onEditBirthday();
+    void onEditPassword();
+
 private:
-    QLabel *nameLabel; // 用户名标签
-    QLineEdit *nameEdit; // 用户名输入框
-    QLabel *emailLabel; // 电子邮件标签
-    QLineEdit *emailEdit; // 电子邮件输入框
-    QPushButton *saveButton; // 保存按钮
+    void saveUserData(const QString &field, const QString &value); // 保存到数据库
+
+    QLabel *avatarLabel;       // 头像显示
+    QLabel *phoneLabel;        // 手机号显示
+    QLabel *emailLabel;        // 邮箱显示
+    QLabel *nameLabel;         // 姓名显示
+    QLabel *genderLabel;       // 性别显示
+    QLabel *birthdayLabel;     // 生日显示
+    QLabel *passwordLabel;     // 密码显示
+    QLabel *idCardLabel;       // 身份证号显示（新增）
+    QPushButton *avatarEditButton; // 修改头像按钮
 };
 
 #endif // USERINFO_H

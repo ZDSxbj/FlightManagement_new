@@ -11,9 +11,13 @@ CONFIG += c++17
 
 SOURCES += \
     buywidget.cpp \
+    chatmanager.cpp \
     chatwidget.cpp \
     completedordersw.cpp \
+    emojidialog.cpp \
+    evaluationdialog.cpp \
     flightinfo.cpp \
+    flightinfomng.cpp \
     flightmngwidget.cpp \
     homewidget.cpp \
     main.cpp \
@@ -28,10 +32,15 @@ SOURCES += \
 
 HEADERS += \
     FlightData.h \
+    MyEventFilter.h \
     buywidget.h \
+    chatmanager.h \
     chatwidget.h \
     completedordersw.h \
+    emojidialog.h \
+    evaluationdialog.h \
     flightinfo.h \
+    flightinfomng.h \
     flightmngwidget.h \
     homewidget.h \
     mainwindow.h \

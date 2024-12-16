@@ -87,6 +87,7 @@ private slots:
 
     //简单的显示个人信息
     void showUserInfo();
-
+    int queryUserUnreadCount(const QString &userId);
+    void resetUserUnreadCount(const QString &userId);
 };
 #endif // MAINWINDOW_H
