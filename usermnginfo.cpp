@@ -1,5 +1,6 @@
 #include "userMngInfo.h"
 #include "chatmanager.h"
+#include "Mine.h"
 #include <QMessageBox>
 userMngInfo::userMngInfo(userData &data, QWidget *parent)
     : QWidget(parent), userdata(data) // 初始化成员 userdata
@@ -107,6 +108,24 @@ userMngInfo::userMngInfo(userData &data, QWidget *parent)
         );
 
 
+    // 使用 lambda 表达式直接在 connect 中定义槽函数
+    connect(orderButton, &QPushButton::clicked, this, [this]() {
+        // 创建 Mine 实例
+        Mine *mineWindow = new Mine(userdata.idCard);
+
+        // 设置为模态窗口，阻止用户与主窗口交互
+        mineWindow->setWindowModality(Qt::ApplicationModal); // 如果 Mine 继承自 QWidget 使用此行
+
+        // 显示窗口，并确保它处于最上层
+        mineWindow->show();
+        mineWindow->raise();
+        mineWindow->activateWindow();
+        mineWindow->resize(800,600);
+        // 如果你需要在关闭 Mine 窗口后删除它以避免内存泄漏，请连接 closeEvent 或 destroyed 信号
+        QObject::connect(mineWindow, &QWidget::destroyed, [mineWindow]() {
+            delete mineWindow;
+        });
+    });
 
     connect(contactButton, &QPushButton::clicked, this, [this]() {
         // 弹出 Chatmanager 页面并传递 userdata.idCard 参数

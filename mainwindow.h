@@ -15,8 +15,8 @@
 #include <QToolTip>
 // 包含所有自定义窗口部件的头文件
 #include "homewidget.h"
-#include "uncompletedordersw.h"
-#include "completedordersw.h"
+#include "Mine.h"
+#include "Tickets.h"
 #include "userinfo.h"
 #include "walletwindow.h"
 #include "chatwidget.h"
@@ -64,13 +64,14 @@ private:
     QPushButton *noticeButton; //右上角的通知
 
     HomeWidget *homePage;
-    UncompletedOrdersW *uncompletedOrdersPage;
-    CompletedOrdersW *completedOrdersPage;
+    Mine *minePage;
+    Tickets *ticketsPage;
     UserInfo *userInfoPage;
     WalletWindow *walletWindow;
     ChatWidget *chatPage;
     QString curusername;
     void switchPage(int index); //切换页面函数
+    QString getUsernameByIdCard(const QString& idCard);
     bool eventFilter(QObject *obj, QEvent *event) override {
         if (obj == personButton && event->type() == QEvent::Enter) {
             showUserInfo();

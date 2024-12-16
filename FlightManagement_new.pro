@@ -10,10 +10,15 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    Changed.cpp \
+    Indent_detail.cpp \
+    Mine.cpp \
+    Mine_indent.cpp \
+    Tickets.cpp \
     buywidget.cpp \
+    change_flightinfo.cpp \
     chatmanager.cpp \
     chatwidget.cpp \
-    completedordersw.cpp \
     emojidialog.cpp \
     evaluationdialog.cpp \
     flightinfo.cpp \
@@ -24,19 +29,23 @@ SOURCES += \
     mainwindow.cpp \
     mainwindowmng.cpp \
     someGlobal.cpp \
-    uncompletedordersw.cpp \
     userinfo.cpp \
     usermnginfo.cpp \
     usermngwidget.cpp \
     walletwindow.cpp
 
 HEADERS += \
+    Changed.h \
     FlightData.h \
+    Indent_detail.h \
+    Mine.h \
+    Mine_indent.h \
     MyEventFilter.h \
+    Tickets.h \
     buywidget.h \
+    change_flightinfo.h \
     chatmanager.h \
     chatwidget.h \
-    completedordersw.h \
     emojidialog.h \
     evaluationdialog.h \
     flightinfo.h \
@@ -46,7 +55,6 @@ HEADERS += \
     mainwindow.h \
     mainwindowmng.h \
     someGlobal.h \
-    uncompletedordersw.h \
     userData.h \
     userinfo.h \
     usermnginfo.h \

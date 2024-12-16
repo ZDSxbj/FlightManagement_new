@@ -533,6 +533,7 @@ void BuyWidget::onPayButtonClicked() {
 
     QMessageBox::information(this, tr("成功"), tr("支付成功！"));
     isPay = true;
+    isbuy=true;
     this->deleteLater();  // 关闭当前窗口
 }
 

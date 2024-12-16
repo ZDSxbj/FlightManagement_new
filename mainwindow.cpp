@@ -9,8 +9,8 @@ MainWindow::MainWindow(QWidget *parent)
     mybuttonGroup(new QButtonGroup(this)),    // 初始化“我的”按钮组
     buttonGroup(new QButtonGroup(this)),
     homePage(new HomeWidget(this)),
-    uncompletedOrdersPage(new UncompletedOrdersW(this)),
-    completedOrdersPage(new CompletedOrdersW(this)),
+    minePage(new Mine(curUser)),
+    ticketsPage(new Tickets(getUsernameByIdCard(curUser))),
     userInfoPage(new UserInfo(this)),
     walletWindow(new WalletWindow(this)),
     chatPage(new ChatWidget(this))
@@ -296,8 +296,8 @@ MainWindow::MainWindow(QWidget *parent)
     //添加页面到QStackedWidget
     // 将所有页面添加到 QStackedWidget 中
     stackedWidget->addWidget(homePage);
-    stackedWidget->addWidget(uncompletedOrdersPage);
-    stackedWidget->addWidget(completedOrdersPage);
+    stackedWidget->addWidget(minePage);
+    stackedWidget->addWidget(ticketsPage);
     stackedWidget->addWidget(userInfoPage);
     stackedWidget->addWidget(walletWindow);
     stackedWidget->addWidget(chatPage);
@@ -481,5 +481,29 @@ void MainWindow::resetUserUnreadCount(const QString &userId)
 
     if (!query.exec()) {
         // 错误处理...
+    }
+}
+
+QString MainWindow::getUsernameByIdCard(const QString& idCard) {
+    // 创建并准备SQL查询
+    QSqlQuery query;
+    query.prepare("SELECT username FROM users WHERE ID_card = :idCard");
+    query.bindValue(":idCard", idCard);
+
+    // 执行查询
+    if (query.exec()) {
+        // 检查是否有结果返回
+        if (query.next()) {
+            // 获取查询到的username
+            return query.value(0).toString();
+        } else {
+            // 如果没有找到匹配的记录，可以返回一个空串或其他默认值
+            qDebug() << "No user found for ID card:" << idCard;
+            return QString(); // 返回空串
+        }
+    } else {
+        // 如果查询失败，打印错误信息
+        qDebug() << "Database query failed:" << query.lastError().text();
+        return QString(); // 返回空串
     }
 }

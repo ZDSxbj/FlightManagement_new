@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
     }
     // MainWindow w;
     MainWindowMng w;
+    whoUse=false;
     w.show();
     return a.exec();
 }
