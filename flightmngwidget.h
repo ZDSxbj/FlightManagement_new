@@ -21,6 +21,8 @@
 #include<QSqlQuery>
 #include <QMessageBox> // 引入 QMessageBox
 #include "MyEventFilter.h"
+#include "flightinfomng.h"
+#include "FlightData.h"
 class FlightmngWidget : public QWidget
 {
     Q_OBJECT
@@ -31,10 +33,15 @@ private slots:
     void toggleAddressListVisibility(QLineEdit *input, QListWidget *list);
     void setAddressFromList(QLineEdit *input, QListWidget *list, QListWidgetItem *item);
     void swapDepartureAndDestination();
-
-    // void checkAndSearchFlights();  // 新增的槽函数，检查 isPay 并调用 searchFlights
-
     void hideAddressListIfApplicable(QLineEdit *input);  //隐藏
+    /// @brief 当用户点击确认按钮时调用此槽函数，根据输入筛选航班信息并更新滚动区域。
+    void onConfirmButtonClicked();
+
+    /// @brief 从数据库加载所有航班信息到 allFlights 成员变量中。
+    void loadFlightsFromDatabase();
+
+    /// @brief 将所有航班信息添加到滚动页面上。
+    void populateScrollAreaWithFlights();
 private:
     QLineEdit *departureInput;
     QLineEdit *destinationInput;
@@ -50,6 +57,11 @@ private:
     QPushButton *addFlightButton;
     QListWidget *addressListOpt;
     QListWidget *addressListOpt2;
+
+    QList<flightinfomng*> flightInfoWidgets; // 存储所有航班信息部件的列表
+    QVector<FlightData> allFlights; // 存储从数据库加载的所有航班信息
+    /// @brief 按照出发时间递增排序 allFlights 成员变量。
+    void sortFlightsByDepartureTime();
 };
 
 #endif // FLIGHTMNGWIDGET_H

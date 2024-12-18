@@ -1,8 +1,9 @@
 #include "flightinfomng.h"
-
+#include <QDebug>
 flightinfomng::flightinfomng(const FlightData &data, QWidget *parent)
     : QWidget(parent), data(data)
 {
+
     // 设置主布局
     mainLayout = new QVBoxLayout(this);
     QFont globalFont;
@@ -13,7 +14,7 @@ flightinfomng::flightinfomng(const FlightData &data, QWidget *parent)
     topLayout = new QHBoxLayout();
     mainLayout->addLayout(topLayout);
 
-    // 创建左侧垂直布局（航空公司、航班编号、飞机型号）
+    // 创建左侧垂直布局（航空公司、起飞日期、航班编号、飞机型号）
     leftVerticalLayout = new QVBoxLayout();
     topLayout->addLayout(leftVerticalLayout);
 
@@ -21,6 +22,10 @@ flightinfomng::flightinfomng(const FlightData &data, QWidget *parent)
     airlineLabel->setStyleSheet("font-weight: bold; color: #333; font-size: 16px;");
     leftVerticalLayout->addWidget(airlineLabel);
 
+    // 创建出发时间标签，只显示日期部分
+    QLabel *depatureDataLabel = new QLabel(data.departure_time.date().toString("yyyy-MM-dd")); // 使用 "yyyy-MM-dd" 格式化为 "年-月-日"
+    depatureDataLabel->setStyleSheet("color: #333; font-size: 16px;");
+    leftVerticalLayout->addWidget(depatureDataLabel);
     flightNumberLabel = new QLabel(data.flight_number);
 
     leftVerticalLayout->addWidget(flightNumberLabel);
@@ -29,10 +34,18 @@ flightinfomng::flightinfomng(const FlightData &data, QWidget *parent)
     airplaneModelLabel->setStyleSheet("color: #666; font-size: 16px;");
     leftVerticalLayout->addWidget(airplaneModelLabel);
 
-    // 创建出发信息垂直布局（出发时间、机场、站楼）
+    // 创建出发信息垂直布局（出发城市、出发时间、机场、站楼）
     departureVerticalLayout = new QVBoxLayout();
     topLayout->addLayout(departureVerticalLayout);
 
+    QLabel *depatureCityLabel=new QLabel(data.departure_city);
+    depatureCityLabel->setStyleSheet(R"(
+        QLabel {
+            font-weight: bold; /* 字体加粗 */
+            font-size: 16px; /* 字体大小 */
+        }
+    )");
+    departureVerticalLayout->addWidget(depatureCityLabel);
     departureTimeLabel = new QLabel(data.departure_time.toString("HH:mm"));
     departureTimeLabel->setStyleSheet("color: #666; font-size: 16px;");
     departureVerticalLayout->addWidget(departureTimeLabel);
@@ -57,6 +70,14 @@ flightinfomng::flightinfomng(const FlightData &data, QWidget *parent)
     arrivalVerticalLayout = new QVBoxLayout();
     topLayout->addLayout(arrivalVerticalLayout);
 
+    QLabel *arrivalCityLabel=new QLabel(data.arrival_city);
+    arrivalCityLabel->setStyleSheet(R"(
+        QLabel {
+            font-weight: bold; /* 字体加粗 */
+            font-size: 16px; /* 字体大小 */
+        }
+    )");
+    arrivalVerticalLayout->addWidget(arrivalCityLabel);
     arrivalTimeLabel = new QLabel(data.arrival_time.toString("HH:mm"));
     arrivalTimeLabel->setStyleSheet("color: #666; font-size: 16px;");
     arrivalVerticalLayout->addWidget(arrivalTimeLabel);
@@ -93,6 +114,10 @@ flightinfomng::flightinfomng(const FlightData &data, QWidget *parent)
 
     QLabel *economyLabel = new QLabel("经济舱");
     economyLayout->addWidget(economyLabel);
+
+    // 添加座位容量标签
+    QLabel *economySeatCapacityLabel = new QLabel("座位容量: " + QString::number(data.economy_seat_capacity));
+    economyLayout->addWidget(economySeatCapacityLabel);
 
     QLabel *economyAvailableSeatsLabel = new QLabel("剩余座位: " + QString::number(data.economy_available_seats));
     economyLayout->addWidget(economyAvailableSeatsLabel);
@@ -135,8 +160,64 @@ flightinfomng::flightinfomng(const FlightData &data, QWidget *parent)
     QLabel *firstClassAvailableSeatsLabel = new QLabel("剩余座位: " + QString::number(data.first_class_available_seats));
     firstClassLayout->addWidget(firstClassAvailableSeatsLabel);
 
+
     // 添加价格标签
     QLabel *firstClassPriceLabel = new QLabel("价格: " + QString::number(data.first_class_price));
     firstClassLayout->addWidget(firstClassPriceLabel);
 
+
+    // 创建底部水平布局，用于放置按钮
+    buttonLayout = new QHBoxLayout();
+    buttonLayout->addStretch(); // 添加伸缩空间以使按钮靠右
+
+    //创建修改时间button
+    editTimeButton = new QPushButton("修改时间");
+    buttonLayout->addWidget(editTimeButton);
+
+    // 创建“取消航班”按钮
+    cancelFlightButton = new QPushButton("取消航班");
+
+    buttonLayout->addWidget(cancelFlightButton);
+
+    // 设置 "修改时间" 按钮样式
+    editTimeButton->setStyleSheet(
+        "QPushButton {"
+        "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #7F7EFF, stop:1 #9E8CFE);" // 渐变紫色背景
+        "    color: white;" // 字体颜色为白色
+        "    border-radius: 10px;" // 圆角按钮
+        "    font-size: 14px;" // 字体大小
+        "    font-weight: bold;" // 字体加粗
+        "    padding: 5px 10px;" // 内边距
+        "    width: 100px;" // 按钮宽度
+        "    border: none;" // 无边框
+        "}"
+        "QPushButton:hover {"
+        "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #9E8CFE, stop:1 #BCA4FF);" // 悬停时更亮的渐变色
+        "}"
+        "QPushButton:pressed {"
+        "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #6D6CFF, stop:1 #8E7AFE);" // 按下时更深的渐变色
+        "}"
+        );
+
+    // 设置 "取消航班" 按钮样式
+    cancelFlightButton->setStyleSheet(
+        "QPushButton {"
+        "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #FFA07A, stop:1 #FF7F7F);" // 渐变浅红色背景
+        "    color: white;" // 字体颜色为白色
+        "    border-radius: 10px;" // 圆角按钮
+        "    font-size: 14px;" // 字体大小
+        "    font-weight: bold;" // 字体加粗
+        "    padding: 5px 10px;" // 内边距
+        "    width: 100px;" // 按钮宽度
+        "    border: none;" // 无边框
+        "}"
+        "QPushButton:hover {"
+        "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #FF7F7F, stop:1 #FF6F6F);" // 悬停时更亮的浅红色
+        "}"
+        "QPushButton:pressed {"
+        "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #FF6F6F, stop:1 #FF5F5F);" // 按下时更深的红色
+        "}"
+        );
+    // 将按钮水平布局添加到主竖直布局的最下方
+    mainLayout->addLayout(buttonLayout);
 }

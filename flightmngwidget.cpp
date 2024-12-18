@@ -1,5 +1,5 @@
 #include "flightmngwidget.h"
-
+#include <algorithm> // 包含 std::sort
 FlightmngWidget::FlightmngWidget(QWidget *parent)
             :  QWidget(parent), departureInput(nullptr), destinationInput(nullptr),
         addressListOpt(new QListWidget(this)), addressListOpt2(new QListWidget(this)),
@@ -116,6 +116,16 @@ FlightmngWidget::FlightmngWidget(QWidget *parent)
     scrollArea->setWidget(scrollContentWidget);
     contentLayout->addWidget(scrollArea);
 
+    // 加载所有航班信息
+    loadFlightsFromDatabase();
+
+    // 对所有航班信息按照出发时间进行排序
+    sortFlightsByDepartureTime();
+    // 将所有航班信息添加到滚动页面上
+    populateScrollAreaWithFlights();
+
+    // 连接确认按钮点击信号到槽函数
+    connect(confirmButton, &QPushButton::clicked, this, &FlightmngWidget::onConfirmButtonClicked);
 
 
     // 设置默认布局间距和边距
@@ -147,4 +157,122 @@ void FlightmngWidget::swapDepartureAndDestination() {
     QString temp = departureInput->text();
     departureInput->setText(destinationInput->text());
     destinationInput->setText(temp);
+}
+
+/// @brief 从数据库加载所有航班信息到 allFlights 成员变量中。
+void FlightmngWidget::loadFlightsFromDatabase() {
+    QSqlQuery query;
+    query.exec("SELECT * FROM Flights");
+
+    while (query.next()) {
+        FlightData data;
+        data.flight_id = query.value("flight_id").toInt();
+        data.flight_number = query.value("flight_number").toString();
+        data.airline = query.value("airline").toString();
+        data.airplane_model = query.value("airplane_model").toString();
+        data.departure_city = query.value("departure_city").toString();
+        data.departure_airport = query.value("departure_airport").toString();
+        data.arrival_city = query.value("arrival_city").toString();
+        data.arrival_airport = query.value("arrival_airport").toString();
+        data.departure_terminal = query.value("departure_terminal").toString();
+        data.arrival_terminal = query.value("arrival_terminal").toString();
+        data.departure_time = query.value("departure_time").toDateTime();
+        data.arrival_time = query.value("arrival_time").toDateTime();
+        data.duration = query.value("duration").toTime();
+        data.same_day_arrival = query.value("same_day_arrival").toBool();
+        data.status = query.value("status").toString();
+        data.economy_seat_capacity = query.value("economy_seat_capacity").toInt();
+        data.economy_available_seats = query.value("economy_available_seats").toInt();
+        data.economy_price = query.value("economy_price").toDouble();
+        data.business_seat_capacity = query.value("business_seat_capacity").toInt();
+        data.business_available_seats = query.value("business_available_seats").toInt();
+        data.business_price = query.value("business_price").toDouble();
+        data.first_class_seat_capacity = query.value("first_class_seat_capacity").toInt();
+        data.first_class_available_seats = query.value("first_class_available_seats").toInt();
+        data.first_class_price = query.value("first_class_price").toDouble();
+        data.refund_policy = query.value("refund_policy").toString();
+        data.baggage_policy = query.value("baggage_policy").toString();
+
+        allFlights.append(data);
+    }
+}
+
+
+/// @brief 当用户点击确认按钮时调用此槽函数，根据输入筛选航班信息并更新滚动区域。
+void FlightmngWidget::onConfirmButtonClicked() {
+    QString departure = departureInput->text(); // 获取出发地输入框文本
+    QString destination = destinationInput->text(); // 获取目的地输入框文本
+    QDate date = datePicker->date(); // 获取日期选择器选定的日期
+
+    // 清空当前滚动区域内容
+    QLayoutItem* item;
+    while ((item = scrollContentLayout->takeAt(0)) != nullptr) {
+        delete item->widget();
+        delete item;
+    }
+    flightInfoWidgets.clear(); // 清空航班信息部件列表
+
+    // 确保所有添加的 widget 在布局中顶部对齐
+    scrollContentLayout->setAlignment(Qt::AlignTop); // 设置布局内容顶部对齐
+
+    // 根据输入筛选航班信息
+    for (const auto &flight : allFlights) {
+        if (flight.departure_city == departure &&
+            flight.arrival_city == destination &&
+            flight.departure_time.date() == date) {
+            // 如果航班匹配用户输入，则创建新的 flightinfomng 实例并添加到滚动区域
+            flightinfomng *infoWidget = new flightinfomng(flight, scrollContentWidget);
+            scrollContentLayout->addWidget(infoWidget);
+            flightInfoWidgets.append(infoWidget);
+        }
+    }
+
+    // 如果没有匹配的航班，显示提示信息
+    if (flightInfoWidgets.isEmpty()) {
+        QMessageBox msgBox(this);
+        msgBox.setIcon(QMessageBox::Information);
+        msgBox.setWindowTitle("提示");
+        msgBox.setText("抱歉，没有找到匹配的航班");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        int ret = msgBox.exec();
+
+        if (ret == QMessageBox::Ok) {
+            // 用户点击了确定按钮后可执行的操作
+        }
+    }
+}
+
+/// @brief 按照出发时间递增排序 allFlights 成员变量。
+void FlightmngWidget::sortFlightsByDepartureTime() {
+    std::sort(allFlights.begin(), allFlights.end(),
+              [](const FlightData &a, const FlightData &b) {
+                  return a.departure_time < b.departure_time;
+              });
+}
+
+/// @brief 将所有航班信息添加到滚动页面上。
+void FlightmngWidget::populateScrollAreaWithFlights() {
+    // 清空当前滚动区域内容
+    QLayoutItem* item;
+    while ((item = scrollContentLayout->takeAt(0)) != nullptr) {
+        delete item->widget(); // 删除部件
+        delete item; // 删除布局项
+    }
+    flightInfoWidgets.clear(); // 清空航班信息部件列表
+
+    // 如果 allFlights 为空，直接返回，避免不必要的操作
+    if (allFlights.isEmpty()) {
+        return;
+    }
+
+    // 确保所有添加的 widget 在布局中顶部对齐
+    scrollContentLayout->setAlignment(Qt::AlignTop); // 设置布局内容顶部对齐
+
+    // 将所有航班信息添加到滚动页面上
+    for (const auto &flight : allFlights) {
+        flightinfomng *infoWidget = new flightinfomng(flight, scrollContentWidget);
+        scrollContentLayout->addWidget(infoWidget);
+        flightInfoWidgets.append(infoWidget);
+    }
 }

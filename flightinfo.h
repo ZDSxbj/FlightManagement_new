@@ -101,21 +101,12 @@ private:
     QLabel *arrivalTerminalLabel;
     QLabel *durationLabel;
     QLabel *sameDayArrivalLabel;
-    QLabel *economySeatCapacityLabel;
-    QLabel *economyAvailableSeatsLabel;
-    QLabel *economyPriceLabel;
-    QLabel *businessSeatCapacityLabel;
-    QLabel *businessAvailableSeatsLabel;
-    QLabel *businessPriceLabel;
-    QLabel *firstClassSeatCapacityLabel;
-    QLabel *firstClassAvailableSeatsLabel;
-    QLabel *firstClassPriceLabel;
-
-
-
     // 动画相关成员
     QPropertyAnimation *animation;  // 动画对象
     void updatePriceLabel();  //显示价格标签
+
 };
 
 #endif // FLIGHTINFO_H
+
+

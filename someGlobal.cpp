@@ -5,4 +5,4 @@
 QString curUser = "12345678";
 bool isPay=false;
 bool isbuy=false;
-bool whoUse=true;
+bool whoUse=true;  //为真时是用户界面，否则为管理员界面
