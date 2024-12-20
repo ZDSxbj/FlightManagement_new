@@ -28,6 +28,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     mainwindowmng.cpp \
+    notice.cpp \
     someGlobal.cpp \
     userinfo.cpp \
     usermnginfo.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     homewidget.h \
     mainwindow.h \
     mainwindowmng.h \
+    notice.h \
     someGlobal.h \
     userData.h \
     userinfo.h \

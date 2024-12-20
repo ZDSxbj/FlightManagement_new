@@ -293,19 +293,19 @@ void  change_flightinfo::onclicked(const QString &type) {
         return;
     }
     QSqlDatabase dbc;
-    dbc = QSqlDatabase::addDatabase("QODBC");
+    dbc = QSqlDatabase::addDatabase("QODBC","database");
     dbc.setHostName("127.0.0.1");
     dbc.setPort(3306);
     dbc.setDatabaseName("Local instance MySQL8");
     dbc.setUserName("root");  // 添加用户名
     dbc.setPassword("ZXJsnd4697");  // 添加密码
 
-    // bool ok = dbc.open();
-    // if (!ok) {
-    //     qDebug() << "Error, persondatabase 数据库文件打开失败！" << dbc.lastError().text();
-    // } else {
-    //     qDebug() << "Success, persondatabase 数据库文件打开成功！";
-    // }
+    bool ok1 = dbc.open();
+    if (!ok1) {
+        qDebug() << "Error, persondatabase 数据库文件打开失败！" << dbc.lastError().text();
+    } else {
+        qDebug() << "Success, persondatabase 数据库文件打开成功！";
+    }
 
     if (!dbc.transaction()) {
         qDebug() << "Failed to start transaction:" << dbc.lastError().text();
@@ -377,9 +377,10 @@ bool change_flightinfo::verifyUserPassword(QSqlQuery &query, const QString &pass
 
 bool change_flightinfo::deleteOldOrderAndUpdateSeats(QSqlQuery &deleteOrderQuery, QSqlQuery &updateSeatsQuery) {
     // 删除旧订单
-    deleteOrderQuery.prepare("DELETE FROM orders WHERE realname= :realname AND flight_number = :flight_number");
+    deleteOrderQuery.prepare("DELETE FROM orders WHERE realname= :realname AND flight_number = :flight_number AND departure_time=:departure_time");
     deleteOrderQuery.bindValue(":realname", real_name);
     deleteOrderQuery.bindValue(":flight_number", fli_number);
+    deleteOrderQuery.bindValue(":departure_time", data.departure_time);
     qDebug()<<real_name<<" "<<fli_number;
     if (!deleteOrderQuery.exec()) {
         qDebug() << "Failed to execute delete order query:" << deleteOrderQuery.lastError().text();
@@ -390,8 +391,8 @@ bool change_flightinfo::deleteOldOrderAndUpdateSeats(QSqlQuery &deleteOrderQuery
     QString seatClass = fli_class.toLower();
     updateSeatsQuery.prepare(QString("UPDATE flights SET %1_available_seats = %1_available_seats + 1 WHERE flight_number= :flight_number AND departure_time=:departure_time")
                                  .arg(seatClass));
-    updateSeatsQuery.bindValue(":flight_number", fli_number);
-    updateSeatsQuery.bindValue(":departure_time", departure_date); // 格式化时间字符串
+    updateSeatsQuery.bindValue(":flight_number", data.flight_number);
+    updateSeatsQuery.bindValue(":departure_time", data.departure_time); // 格式化时间字符串
     if (!updateSeatsQuery.exec()) {
         qDebug() << "Failed to execute update seats query:" << updateSeatsQuery.lastError().text();
         return false;
@@ -407,7 +408,7 @@ bool change_flightinfo::createNewOrder(QSqlQuery &query, const QString &type) {
                   "VALUES (:Id_card, :realname, :flight_number, :changed, :order_date, :seat_class, :price, :status, :departure_time)");
     query.bindValue(":Id_card", id_card);
     query.bindValue(":realname", real_name);
-    query.bindValue(":flight_number", fli_number);
+    query.bindValue(":flight_number", data.flight_number);
     query.bindValue(":changed", 0); // 假设 `changed` 是一个布尔值
     query.bindValue(":order_date", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")); // 格式化日期时间字符串
     query.bindValue(":seat_class", type);
@@ -451,7 +452,7 @@ bool change_flightinfo::updateWalletTransaction(QSqlQuery &query, const QString 
     }
 
 
-    query.prepare("UPDATE users SET balance = balance + :price WHERE Id_card =:id_card");
+    query.prepare("UPDATE users SET balance = balance + :price WHERE ID_card =:id_card");
     query.bindValue(":price",price-now_price);
     query.bindValue(":id_card",id_card);
     if (!query.exec()) {

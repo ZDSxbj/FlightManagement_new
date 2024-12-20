@@ -219,12 +219,9 @@ void Indent_detail::setupPassengerInfoLabels(QVBoxLayout *layout)
     seatLabel->setStyleSheet("font-family: 'Microsoft YaHei'; font-size: 14px; color: #000000; background-color: transparent;");
     passengerInfoLayout->addWidget(passengerLabel);
     passengerInfoLayout->addWidget(seatLabel);
-    if(statuss==1)
-    {
         QLabel *priceLabel = new QLabel(QString("票价：￥%1").arg(cost), this);
         priceLabel->setStyleSheet("font-family: 'Microsoft YaHei'; font-size: 14px; color: #FF9800;background-color: transparent; font-weight: bold;");
         passengerInfoLayout->addWidget(priceLabel);
-    }
 
     layout->addLayout(passengerInfoLayout);
 }
@@ -233,11 +230,12 @@ void Indent_detail::setupTicketActions(QVBoxLayout *layout)
     // QWidget *ticketActionsWidget = new QWidget;
     // ticketActionsWidget->setStyleSheet(" background-color: transparent; ");
     QHBoxLayout *ticketActionsLayout = new QHBoxLayout(this);
-    QLabel *priceLabel = new QLabel(QString("票价：￥%1").arg(cost), this);
-    priceLabel->setStyleSheet("font-family: 'Microsoft YaHei'; font-size: 14px; color: #FF9800;background-color: transparent; font-weight: bold;");
-    ticketActionsLayout->addWidget(priceLabel);
+    // QLabel *priceLabel = new QLabel(QString("票价：￥%1").arg(cost), this);
+    // priceLabel->setStyleSheet("font-family: 'Microsoft YaHei'; font-size: 14px; color: #FF9800;background-color: transparent; font-weight: bold;");
+    // ticketActionsLayout->addWidget(priceLabel);
 
     //refundButton->setStyleSheet("background-color: #E91E63; color: white; border-radius: 5px; padding: 10px 20px; font-family: 'Microsoft YaHei'; font-size: 16px; font-weight: bold;");
+    ticketActionsLayout->addStretch();
     if(change==1)
     {
         QPushButton *changeButton = new QPushButton(QIcon(":/icons/change.png"), "改签", this);
@@ -248,7 +246,7 @@ void Indent_detail::setupTicketActions(QVBoxLayout *layout)
             "border-radius: 10px;" // 圆角按钮
             "font-size: 18px;" // 增大字体
             "padding: 8px 8px;" // 增加内边距
-            "min-width: 60px;" // 按钮最小宽度
+            "min-width: 130px;" // 按钮最小宽度
             "border: none;" // 去除边框
             "}"
             "QPushButton:hover {"
@@ -258,6 +256,7 @@ void Indent_detail::setupTicketActions(QVBoxLayout *layout)
             "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #6D6CFF, stop:1 #8E7AFE);" // 按下时更深的渐变色
             "}"
             );
+
         ticketActionsLayout->addWidget(changeButton);
         if(!whoUse){
             changeButton->hide();
@@ -282,7 +281,7 @@ void Indent_detail::setupTicketActions(QVBoxLayout *layout)
         "border-radius: 10px;" // 圆角按钮
         "font-size: 18px;" // 增大字体
         "padding: 8px 8px;" // 增加内边距
-        "min-width: 60px;" // 按钮最小宽度
+        "min-width: 130px;" // 按钮最小宽度
         "border: none;" // 去除边框
         "}"
         "QPushButton:hover {"
@@ -306,6 +305,7 @@ void Indent_detail::ondeleteCliced()
     if(refundMessage->exec()==QMessageBox::Yes)
     {
         emit deleteRequested(name,fli_number,fli_class,departure_Date,cost,id_card);
+        isRefund=true;
     }
 }
 void Indent_detail::handlecomplete()

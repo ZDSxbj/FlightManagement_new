@@ -15,6 +15,7 @@
 #include <QButtonGroup>
 #include <QPropertyAnimation>
 #include <QToolTip>
+#include <Qtimer>
 #include"flightmngwidget.h"
 #include"usermngwidget.h"
 

@@ -1,6 +1,6 @@
 #include "Mine.h"
 #include "Mine_indent.h"
-
+#include<QButtonGroup>
 // 构造函数
 Mine::Mine(const QString& card, QWidget *parent)
     : QWidget(parent), card(card) {
@@ -26,23 +26,31 @@ void Mine::setupUi() {
 }
 
 void Mine::setupButtons() {
-    const QString buttonStyle = R"(
-        QPushButton {
-            background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #7F7EFF, stop:1 #9E8CFE);
-            color: white;
-            border-radius: 10px;
-            font-size: 18px;
-            padding: 8px 16px;
-            min-width: 60px;
-            border: none;
-        }
-        QPushButton:hover {
-            background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #9E8CFE, stop:1 #BCA4FF);
-        }
-        QPushButton:pressed {
-            background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #6D6CFF, stop:1 #8E7AFE);
-        }
-    )";
+const QString buttonStyle = R"(
+    QPushButton {
+        background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #7F7EFF, stop:1 #9E8CFE);
+        color: white;
+        border-radius: 10px;
+        font-size: 18px;
+        padding: 8px 16px;
+        min-width: 60px;
+        border: none;
+    }
+    QPushButton:hover {
+        background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #9E8CFE, stop:1 #BCA4FF);
+    }
+    QPushButton:checked {
+        background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #5A49FF, stop:1 #7B64FF); /* 更深的紫色 */
+        /* 或者使用单一颜色 */
+        /* background-color: #5A49FF; */
+    }
+    QPushButton:checked:hover {
+        background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #4D3AFF, stop:1 #6C55FF); /* 悬停时更深层次的紫色 */
+        /* 或者使用单一颜色 */
+        /* background-color: #4D3AFF; */
+    }
+)";
+
 
     // 创建一个容器部件用于按钮布局，并设置其背景透明
     QWidget *buttonContainer = new QWidget(contentWidget); // 确保父部件是 contentWidget
@@ -61,6 +69,7 @@ void Mine::setupButtons() {
 
     foreach (QPushButton *button, buttons) {
         button->setStyleSheet(buttonStyle); // 应用样式表到每个按钮
+        button->setCheckable(true); // 设置按钮为可选中状态
         connect(button, &QPushButton::clicked, this, [this, button]() {
             int index = buttons.indexOf(button);
             onButtonClicked(index);
@@ -68,6 +77,12 @@ void Mine::setupButtons() {
         buttonLayout->addWidget(button);
     }
 
+    // 确保两个按钮互斥，即一次只能有一个按钮被选中
+    QButtonGroup *buttonGroup = new QButtonGroup(this);
+    for (int i = 0; i < buttons.size(); ++i) {
+        buttonGroup->addButton(buttons[i], i);
+    }
+    buttons[0]->setChecked(true); //初始化时第一个button被选中
     // 添加一个伸展因子来推动按钮靠左
     buttonLayout->addStretch();
 

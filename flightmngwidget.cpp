@@ -1,9 +1,9 @@
 #include "flightmngwidget.h"
 #include <algorithm> // 包含 std::sort
 FlightmngWidget::FlightmngWidget(QWidget *parent)
-            :  QWidget(parent), departureInput(nullptr), destinationInput(nullptr),
-        addressListOpt(new QListWidget(this)), addressListOpt2(new QListWidget(this)),
-        datePicker(new QDateEdit(QDateTime::currentDateTime().date(), this))
+    :  QWidget(parent), departureInput(nullptr), destinationInput(nullptr),
+    addressListOpt(new QListWidget(this)), addressListOpt2(new QListWidget(this)),
+    datePicker(new QDateEdit(QDateTime::currentDateTime().date(), this))
 {
     contentLayout = new QVBoxLayout(this);
 
@@ -222,6 +222,7 @@ void FlightmngWidget::onConfirmButtonClicked() {
             flight.departure_time.date() == date) {
             // 如果航班匹配用户输入，则创建新的 flightinfomng 实例并添加到滚动区域
             flightinfomng *infoWidget = new flightinfomng(flight, scrollContentWidget);
+            connect (infoWidget,&flightinfomng::iscanceled,this,&FlightmngWidget::onConfirmButtonClicked);
             scrollContentLayout->addWidget(infoWidget);
             flightInfoWidgets.append(infoWidget);
         }
@@ -272,7 +273,27 @@ void FlightmngWidget::populateScrollAreaWithFlights() {
     // 将所有航班信息添加到滚动页面上
     for (const auto &flight : allFlights) {
         flightinfomng *infoWidget = new flightinfomng(flight, scrollContentWidget);
+        connect (infoWidget,&flightinfomng::iscanceled,this,&FlightmngWidget::handlecancel);
         scrollContentLayout->addWidget(infoWidget);
         flightInfoWidgets.append(infoWidget);
     }
+}
+void FlightmngWidget::handlecancel(const FlightData& data)
+{
+    auto it = std::find_if(allFlights.begin(), allFlights.end(), [&data](const FlightData& flight) {
+        return flight == data;
+    });
+
+    if (it != allFlights.end()) {
+        // 如果找到匹配的航班，则调用处理取消逻辑
+        allFlights.erase(it); // 从容器中移除该航班
+        populateScrollAreaWithFlights();
+        // 弹出消息框提示删除成功
+        // 弹出消息框提示删除成功
+        QMessageBox::information(this, tr("成功"), tr("航班取消成功。"));
+    } else {
+        qDebug() << "No matching flight found for cancellation.";
+    }
+
+
 }

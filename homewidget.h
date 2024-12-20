@@ -33,7 +33,7 @@ private slots:
     void swapDepartureAndDestination();
     void searchFlights();
     void checkAndSearchFlights();  // 新增的槽函数，检查 isPay 并调用 searchFlights
-
+    void refresh();
     void hideAddressListIfApplicable(QLineEdit *input);  //隐藏
 
 private:

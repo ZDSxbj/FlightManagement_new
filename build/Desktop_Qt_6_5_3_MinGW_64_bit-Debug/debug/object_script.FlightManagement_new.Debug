@@ -16,6 +16,7 @@ debug/homewidget.o
 debug/main.o
 debug/mainwindow.o
 debug/mainwindowmng.o
+debug/notice.o
 debug/someGlobal.o
 debug/userinfo.o
 debug/usermnginfo.o
@@ -40,6 +41,7 @@ debug/moc_flightmngwidget.o
 debug/moc_homewidget.o
 debug/moc_mainwindow.o
 debug/moc_mainwindowmng.o
+debug/moc_notice.o
 debug/moc_userinfo.o
 debug/moc_usermnginfo.o
 debug/moc_usermngwidget.o

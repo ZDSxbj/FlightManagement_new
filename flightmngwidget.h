@@ -36,7 +36,7 @@ private slots:
     void hideAddressListIfApplicable(QLineEdit *input);  //隐藏
     /// @brief 当用户点击确认按钮时调用此槽函数，根据输入筛选航班信息并更新滚动区域。
     void onConfirmButtonClicked();
-
+    void handlecancel(const FlightData& data);
     /// @brief 从数据库加载所有航班信息到 allFlights 成员变量中。
     void loadFlightsFromDatabase();
 

@@ -104,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent)
     uncompletedButton->setStyleSheet(subButtonStyle);
     orderbuttonGroup->addButton(uncompletedButton, orderbuttonGroup->buttons().size()); // 将按钮添加到按钮组
     orderButtonsLayout->addWidget(uncompletedButton); // 添加“未完成订单”按钮到子菜单
-    completedButton =new QPushButton("我的车票"); // 创建“已完成订单”按钮
+    completedButton =new QPushButton("我的机票"); // 创建“已完成订单”按钮
     completedButton->setStyleSheet(subButtonStyle);
     orderbuttonGroup->addButton(completedButton, orderbuttonGroup->buttons().size()); // 将按钮添加到按钮组
     orderButtonsLayout->addWidget(completedButton); // 添加“已完成订单”按钮到子菜单
@@ -233,7 +233,7 @@ MainWindow::MainWindow(QWidget *parent)
                                 "font-size: 12px;"
                                 "font-weight: bold;"
                                 "padding: 3px 8px;"
-                                "width: 80px;"
+                                "width: 100px;"
                                 "border: none;"
                                 "}"
                                 "QPushButton:hover {"
@@ -269,6 +269,7 @@ MainWindow::MainWindow(QWidget *parent)
     titlelayout->addWidget(switchButton); // 切换账号按钮
 
     // noticeButton样式
+    // 定义通知按钮
     noticeButton = new QPushButton("通知");
     noticeButton->setStyleSheet("QPushButton {"
                                 "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #7F7EFF, stop:1 #9E8CFE);"
@@ -287,9 +288,60 @@ MainWindow::MainWindow(QWidget *parent)
                                 "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #6D6CFF, stop:1 #8E7AFE);"
                                 "}");
 
-    // 将按钮添加到布局中
-    titlelayout->addWidget(noticeButton); // 通知按钮
+    // 定义未读通知数量标签
+    QLabel *noticeCountLabel = new QLabel;
+    noticeCountLabel->setStyleSheet("background-color: red; color: white; "
+                                    "border-radius: 10px; font-size: 12px; "
+                                    "font-weight: bold; padding: 2px 5px;");
+    noticeCountLabel->setAlignment(Qt::AlignCenter);
+    noticeCountLabel->setFixedSize(20, 20);
+    noticeCountLabel->setVisible(false); // 初始隐藏标签
+
+    // 添加通知按钮和标签到布局
+    QHBoxLayout *noticeLayout = new QHBoxLayout;
+    noticeLayout->addWidget(noticeButton);
+    noticeLayout->addWidget(noticeCountLabel);
+    noticeLayout->setAlignment(Qt::AlignLeft);
+    titlelayout->addLayout(noticeLayout); // 添加到标题布局
     contentLayout->addWidget(titleBar);
+
+    // 定义定时器
+    QTimer *noticeTimer = new QTimer(this);
+
+    // 定义一个函数来更新通知标签
+    auto updateNoticeCount = [=]() {
+        QSqlQuery countQuery;
+        countQuery.prepare("SELECT notice_num FROM notice_num WHERE ID_card = :ID_card");
+        countQuery.bindValue(":ID_card", curUser); // 示例用户 ID
+        if (countQuery.exec() && countQuery.next()) {
+            int noticeNum = countQuery.value(0).toInt();
+            if (noticeNum > 0) {
+                noticeCountLabel->setText(QString::number(noticeNum));
+                noticeCountLabel->setVisible(true); // 显示标签
+            } else {
+                noticeCountLabel->setVisible(false); // 隐藏标签
+            }
+        }
+    };
+
+    // 连接定时器信号到更新函数
+    connect(noticeTimer, &QTimer::timeout, updateNoticeCount);
+
+    // 启动定时器（间隔 1 秒）
+    noticeTimer->start(1000);
+
+
+
+    // 点击通知按钮时显示 Notice 窗口
+    connect(noticeButton, &QPushButton::clicked, this, [=]() {
+        QString userId = curUser; // 示例用户 ID
+        Notice *noticeWindow = new Notice(userId);
+        noticeWindow->setAttribute(Qt::WA_DeleteOnClose); // 窗口关闭时自动释放内存
+        noticeWindow->show();
+    });
+
+
+
 
 
     stackedWidget = new QStackedWidget; // 创建QStackedWidget用于页面切换
@@ -444,7 +496,7 @@ void MainWindow::switchPage(int index) {
         functitle->setText("我的订单");
         break;
     case 2:
-        functitle->setText("我的车票");
+        functitle->setText("我的机票");
         break;
     case 3:
         functitle->setText("个人信息");

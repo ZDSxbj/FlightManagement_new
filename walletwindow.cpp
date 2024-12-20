@@ -249,10 +249,6 @@ void WalletWindow::onViewBillClicked()
 {
     QSqlQuery query;
 
-    if (!query.exec("SET NAMES 'utf8mb4'")) {
-        qDebug() << "Failed to set character set: " << query.lastError().text();
-    }
-
     query.prepare("SELECT transaction_type, amount, transaction_time, flight_number, departure_city, destination_city "
                   "FROM wallet_transactions WHERE username = :username ORDER BY transaction_time DESC");
     query.bindValue(":username", "user1");

@@ -5,6 +5,9 @@
 #include <QWidget>
 #include<QPainterPath>
 #include "FlightData.h"
+#include<QSqlQuery>
+#include<QSqlError>
+#include<QMessageBox>
 class flightinfomng : public QWidget
 {
     Q_OBJECT
@@ -65,10 +68,12 @@ private:
     QLabel *arrivalTerminalLabel;
     QLabel *durationLabel;
     QLabel *sameDayArrivalLabel;
+    QMessageBox *refundMessage;
 
-
-
+private slots:
+    void onclickedcancel();
 signals:
+    void iscanceled(FlightData data);
 };
 
 #endif // FLIGHTINFOMNG_H

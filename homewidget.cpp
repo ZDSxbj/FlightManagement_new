@@ -94,6 +94,13 @@ HomeWidget::HomeWidget(QWidget *parent)
     scrollContentWidget = new QWidget(scrollArea);
     scrollContentLayout = new QVBoxLayout(scrollContentWidget);
     scrollArea->setWidget(scrollContentWidget);
+    // 如果没有记录，添加一个居中的 "暂无记录" 标签
+    QLabel *noRecordsLabel = new QLabel("请搜索您想要乘坐的航班", this);
+    noRecordsLabel->setAlignment(Qt::AlignCenter);
+    noRecordsLabel->setStyleSheet("color: gray; font-size: 18px;");
+    scrollContentLayout->addStretch();
+    scrollContentLayout->addWidget(noRecordsLabel);
+    scrollContentLayout->addStretch();
     contentLayout->addWidget(scrollArea);
 
 
@@ -229,6 +236,13 @@ void HomeWidget::searchFlights()
         }
     }
     if(flightInfoWidgets.size()==0){
+        // 如果没有记录，添加一个居中的 "暂无记录" 标签
+        QLabel *noRecordsLabel = new QLabel("请搜索您想要的航班", this);
+        noRecordsLabel->setAlignment(Qt::AlignCenter);
+        noRecordsLabel->setStyleSheet("color: gray; font-size: 18px;");
+        scrollContentLayout->addStretch();
+        scrollContentLayout->addWidget(noRecordsLabel);
+        scrollContentLayout->addStretch();
         // 弹出提示窗口
         QMessageBox::information(this, "提示", "对不起，未找到符合条件的记录。");
         return ;
@@ -267,11 +281,104 @@ void HomeWidget::printFlightInfos()
     // // 更新布局以反映新增加的部件
     // scrollContentLayout->update();
 }
+void HomeWidget::refresh(){
+    // 获取用户输入的值
+    QString departureCity = departureInput->text().trimmed();;
+    QString arrivalCity = destinationInput->text().trimmed();
+    QDate selectedDate = datePicker->date();
 
+    // 准备SQL查询语句
+    QSqlQuery query;
+    query.prepare("SELECT flight_number, airline, airplane_model, "
+                  "departure_city, departure_airport, arrival_city, arrival_airport, "
+                  "departure_terminal, arrival_terminal, departure_time, arrival_time, "
+                  "duration, same_day_arrival, status, economy_seat_capacity, "
+                  "economy_available_seats, economy_price, business_seat_capacity, "
+                  "business_available_seats, business_price, first_class_seat_capacity, "
+                  "first_class_available_seats, first_class_price, refund_policy, baggage_policy "
+                  "FROM Flights WHERE DATE(departure_time) = :date AND "
+                  "departure_city = :departure_city AND arrival_city = :arrival_city");
+
+    query.bindValue(":date", selectedDate.toString("yyyy-MM-dd"));
+    query.bindValue(":departure_city", departureCity);
+    query.bindValue(":arrival_city", arrivalCity);
+
+    // 执行查询
+    if (!query.exec()) {
+        qDebug() << "Error executing query:" << query.lastError().text();
+
+    } else {
+        qDebug() << "Query executed successfully.";
+    }
+
+    // 检查是否有结果返回
+    if (query.size() > 0) {
+        qDebug() << "Query returned" << query.size() << "results.";
+    } else {
+        qDebug() << "No results found.";
+    }
+
+    // 清空之前的结果
+    clearFlightResults();
+
+    // 遍历查询结果并显示
+    while (query.next()) {
+        qDebug() << "Found and displaying result"; // 确认进入循环
+        // 构建 FlightData 对象
+        FlightData data;
+        data.flight_number = query.value("flight_number").toString();
+        data.airline = query.value("airline").toString();
+        data.airplane_model = query.value("airplane_model").toString();
+        data.departure_city = query.value("departure_city").toString();
+        data.departure_airport = query.value("departure_airport").toString();
+        data.arrival_city = query.value("arrival_city").toString();
+        data.arrival_airport = query.value("arrival_airport").toString();
+        data.departure_terminal = query.value("departure_terminal").toString();
+        data.arrival_terminal = query.value("arrival_terminal").toString();
+        data.departure_time = query.value("departure_time").toDateTime();
+        data.arrival_time = query.value("arrival_time").toDateTime();
+        data.duration = query.value("duration").toTime();
+        data.same_day_arrival = query.value("same_day_arrival").toBool();
+        data.status = query.value("status").toString();
+        data.economy_seat_capacity = query.value("economy_seat_capacity").toInt();
+        data.economy_available_seats = query.value("economy_available_seats").toInt();
+        data.economy_price = query.value("economy_price").toDouble();
+        data.business_seat_capacity = query.value("business_seat_capacity").toInt();
+        data.business_available_seats = query.value("business_available_seats").toInt();
+        data.business_price = query.value("business_price").toDouble();
+        data.first_class_seat_capacity = query.value("first_class_seat_capacity").toInt();
+        data.first_class_available_seats = query.value("first_class_available_seats").toInt();
+        data.first_class_price = query.value("first_class_price").toDouble();
+        data.refund_policy = query.value("refund_policy").toString();
+        data.baggage_policy = query.value("baggage_policy").toString();
+        // 判断是否至少有一个舱型有剩余座位
+        if (data.economy_available_seats > 0 ||
+            data.business_available_seats > 0 ||
+            data.first_class_available_seats > 0) {
+            // 创建一个新的 flightinfo 实例并传递数据
+            flightinfo *newFlightInfo = new flightinfo(data, this); // 使用 this 作为父部件
+            flightInfoWidgets.append(newFlightInfo); // 添加到向量中
+            qDebug() << "Added new flightinfo instance for flight:" << data.flight_number;
+        } else {
+            qDebug() << "Skipped flight:" << data.flight_number << "due to no available seats.";
+        }
+    }
+    if(flightInfoWidgets.size()==0){
+        // 如果没有记录，添加一个居中的 "暂无记录" 标签
+        QLabel *noRecordsLabel = new QLabel("请搜索您想要的航班", this);
+        noRecordsLabel->setAlignment(Qt::AlignCenter);
+        noRecordsLabel->setStyleSheet("color: gray; font-size: 20px;");
+        scrollContentLayout->addStretch();
+        scrollContentLayout->addWidget(noRecordsLabel);
+        scrollContentLayout->addStretch();
+        return ;
+    }
+    printFlightInfos();
+}
 // 新增的槽函数
 void HomeWidget::checkAndSearchFlights() {
     if (isPay) {
-        searchFlights();  // 调用 searchFlights 函数
+        refresh();  // 调用 searchFlights 函数
         isPay = false;    // 置为 false，防止重复调用
     }
 }

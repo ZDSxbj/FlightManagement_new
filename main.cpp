@@ -33,12 +33,12 @@ int main(int argc, char *argv[])
         }
     }
 
-    //用户界面
-    // MainWindow w;
+    // //用户界面
+    MainWindow w;
 
     //管理员界面
-    MainWindowMng w;
-    whoUse=false;
+    // MainWindowMng w;
+    // whoUse=false;
     w.show();
     return a.exec();
 }

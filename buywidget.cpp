@@ -145,9 +145,6 @@ BuyWidget::BuyWidget(FlightData data,int type,QWidget *parent)
     cancelButton(new QPushButton("取消", this)),
     bottomLayout(new QHBoxLayout())
 {
-    curUser="12345678";
-    // 输出修改后的值
-    qDebug() << "Modified curUser:" << curUser;
     switch (type) {
     case 1:
         seatPrice=data.economy_price;
@@ -534,6 +531,7 @@ void BuyWidget::onPayButtonClicked() {
     QMessageBox::information(this, tr("成功"), tr("支付成功！"));
     isPay = true;
     isbuy=true;
+    isbuys=true;
     this->deleteLater();  // 关闭当前窗口
 }
 

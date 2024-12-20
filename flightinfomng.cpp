@@ -5,6 +5,28 @@ flightinfomng::flightinfomng(const FlightData &data, QWidget *parent)
 {
 
     // 设置主布局
+    refundMessage = new QMessageBox(this);
+    refundMessage->setIcon(QMessageBox::Warning);
+    refundMessage->setWindowTitle("删除确认");
+    refundMessage->setText("您确定要进行删除操作吗？");
+    refundMessage->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    refundMessage->setDefaultButton(QMessageBox::No);
+    refundMessage->setWindowFlags(refundMessage->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    refundMessage->setStyleSheet(
+        "QMessageBox {"
+        "background-color: #f0f0f0;"
+        "font-size: 14px;"
+        "}"
+        "QMessageBox QLabel{"
+        "color: blue;"
+        "}"
+        "QMessageBox QPushButton{"
+        "background-color: #4CAF50;"
+        "color: white;"
+        "border: none;"
+        "padding: 5px 10px;"
+        "}"
+        );
     mainLayout = new QVBoxLayout(this);
     QFont globalFont;
 
@@ -218,6 +240,168 @@ flightinfomng::flightinfomng(const FlightData &data, QWidget *parent)
         "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #FF6F6F, stop:1 #FF5F5F);" // 按下时更深的红色
         "}"
         );
+    connect(cancelFlightButton,&QPushButton::clicked,this,&flightinfomng::onclickedcancel);
     // 将按钮水平布局添加到主竖直布局的最下方
     mainLayout->addLayout(buttonLayout);
+}
+void flightinfomng::onclickedcancel()
+{
+    if(refundMessage->exec()==QMessageBox::No)
+    {
+        return;
+    }
+    const QString connectionName = "flight_cancellation_db";
+
+    // 如果连接已经存在，则重用它；否则创建新的连接
+    QSqlDatabase dbc;
+    if (QSqlDatabase::contains(connectionName)) {
+        dbc = QSqlDatabase::database(connectionName);
+    } else {
+
+
+        dbc = QSqlDatabase::addDatabase("QODBC", connectionName);
+        dbc.setHostName("127.0.0.1");
+        dbc.setPort(3306);
+        dbc.setDatabaseName("Local instance MySQL8");
+        dbc.setUserName("root");  // 添加用户名
+        dbc.setPassword("ZXJsnd4697");  // 添加密码
+
+    }
+
+
+    if (!dbc.open()) {
+        qDebug() << "Error, 数据库文件打开失败！" << dbc.lastError().text();
+        return;
+    }
+
+    qDebug() << "Success, 数据库文件打开成功！";
+
+    if (!dbc.transaction()) {
+        qDebug() << "Failed to start transaction:" << dbc.lastError().text();
+        dbc.close();
+        QSqlDatabase::removeDatabase(connectionName);
+        return;
+    }
+
+    QSqlQuery query(dbc);
+
+    // 删除航班记录
+    query.prepare("DELETE FROM flights WHERE flight_number=:flight_number AND departure_time=:departure_time");
+    query.bindValue(":flight_number", data.flight_number);
+    query.bindValue(":departure_time", data.departure_time);
+    if (!query.exec()) {
+        qDebug() << "Failed to execute delete order query:" << query.lastError().text();
+        dbc.rollback();
+        dbc.close();
+        QSqlDatabase::removeDatabase(connectionName);
+        return;
+    }
+
+    // 查询与该航班相关的订单
+    query.prepare("SELECT realname, price FROM orders WHERE flight_number=:flight_number AND departure_time=:departure_time");
+    query.bindValue(":flight_number", data.flight_number);
+    query.bindValue(":departure_time", data.departure_time);
+    if (!query.exec()) {
+        qDebug() << "Failed to select orders:" << query.lastError().text();
+        dbc.rollback();
+        dbc.close();
+        QSqlDatabase::removeDatabase(connectionName);
+        return;
+    }
+
+    while (query.next()) {
+        QString name = query.value(0).toString();
+        int price = query.value(1).toInt();
+
+        QSqlQuery queryy(dbc);
+
+        // 获取用户的 ID 卡号
+        queryy.prepare("SELECT ID_card FROM users WHERE username=:username");
+        queryy.bindValue(":username", name);
+        if (!queryy.exec() || !queryy.next()) {
+            qDebug() << "Failed to get user ID card or no such user:" << queryy.lastError().text();
+            dbc.rollback();
+            dbc.close();
+            QSqlDatabase::removeDatabase(connectionName);
+            return;
+        }
+        QString id_card = queryy.value(0).toString();
+
+        // 更新用户余额
+        queryy.prepare("UPDATE users SET balance = balance + :price WHERE ID_card = :id_card");
+        queryy.bindValue(":price", price);
+        queryy.bindValue(":id_card", id_card);
+        if (!queryy.exec()) {
+            qDebug() << "Failed to update wallet transaction:" << queryy.lastError().text();
+            dbc.rollback();
+            dbc.close();
+            QSqlDatabase::removeDatabase(connectionName);
+            return;
+        }
+
+        // 插入钱包交易记录
+        queryy.prepare(
+            "INSERT INTO wallet_transactions (username, ID_card, transaction_type, amount, transaction_time, flight_number) "
+            "VALUES (:username, :ID_card, :transaction_type, :amount, :transaction_time, :flight_number)"
+            );
+        queryy.bindValue(":username", name);
+        queryy.bindValue(":ID_card", id_card);
+        queryy.bindValue(":transaction_type", "Cancelled");
+        queryy.bindValue(":amount", price);
+        queryy.bindValue(":transaction_time", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+        queryy.bindValue(":flight_number", data.flight_number);
+
+        if (!queryy.exec()) {
+            qDebug() << "Failed to insert wallet transaction:" << queryy.lastError().text();
+            dbc.rollback();
+            dbc.close();
+            QSqlDatabase::removeDatabase(connectionName);
+            return;
+        }
+
+        // 插入通知记录
+        queryy.prepare(
+            "INSERT INTO notice (username, ID_card, flight_number, departure_time, state, notice_time) "
+            "VALUES (:username, :ID_card, :flight_number, :departure_time, :state, :notice_time)"
+            );
+        queryy.bindValue(":username", name);
+        queryy.bindValue(":ID_card", id_card);
+        queryy.bindValue(":flight_number", data.flight_number);
+        queryy.bindValue(":departure_time", data.departure_time);
+        queryy.bindValue(":state", "Cancelled");
+        queryy.bindValue(":notice_time", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+
+        if (!queryy.exec()) {
+            qDebug() << "Failed to insert notice:" << queryy.lastError().text();
+            dbc.rollback();
+            dbc.close();
+            QSqlDatabase::removeDatabase(connectionName);
+            return;
+        }
+    }
+
+    // 删除订单记录
+    query.prepare("DELETE FROM orders WHERE flight_number=:flight_number AND departure_time=:departure_time");
+    query.bindValue(":flight_number", data.flight_number);
+    query.bindValue(":departure_time", data.departure_time);
+    if (!query.exec()) {
+        qDebug() << "Failed to delete orders:" << query.lastError().text();
+        dbc.rollback();
+        dbc.close();
+        QSqlDatabase::removeDatabase(connectionName);
+        return;
+    }
+
+    if (dbc.commit()) {
+        qDebug() << "All operations completed successfully.";
+    } else {
+        qDebug() << "Failed to commit transaction:" << dbc.lastError().text();
+        dbc.rollback();
+    }
+
+    dbc.close();
+    QSqlDatabase::removeDatabase(connectionName);
+    emit iscanceled(data);
+
+
 }

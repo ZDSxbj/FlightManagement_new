@@ -45,31 +45,31 @@ private:
     void setupFlightDetailsLabels(QVBoxLayout *layout);
     void setupPassengerInfoLabels(QVBoxLayout *layout);
     void setupTicketActions(QVBoxLayout *layout);
-    void paintEvent(QPaintEvent *event) override {
+    void paintEvent(QPaintEvent *event) {
         // 先调用父类的 paintEvent 确保子控件正确绘制
-        //QWidget::paintEvent(event);
+        QWidget::paintEvent(event);
 
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing, true); // 抗锯齿
 
         // 绘制渐变背景
         QLinearGradient gradient(0, 0, 0, height());
-        if(statuss==0||statuss==3)
-        {
+        if (statuss == 0 || statuss == 3) {
             gradient.setColorAt(0, QColor(255, 255, 255));  // 白色
             gradient.setColorAt(1, QColor(224, 223, 255)); // 淡紫色
-        }
-        else
-        {
+        } else {
             gradient.setColorAt(0, QColor(255, 255, 255));  // 白色
-            gradient.setColorAt(1, QColor(138, 255, 230)); // 淡紫色
+            gradient.setColorAt(1, QColor(138, 255, 230)); // 淡绿色
         }
 
         painter.setBrush(gradient);
-        painter.setPen(Qt::NoPen);  // 不需要边框
-        painter.drawRect(rect());   // 使用 rect() 方法获取整个 widget 的矩形区域
-    }
 
+        // 设置无边框
+        painter.setPen(Qt::NoPen);  // 使用 Qt::NoPen 来避免绘制边框
+
+        // 使用 drawRoundedRect 方法绘制带圆角的矩形
+        painter.drawRoundedRect(rect(), 10, 10); // 第二个和第三个参数是 xRadius 和 yRadius，定义圆角的大小
+    }
     // 成员变量
     QString name;  // 真实姓名
     QString fli_number;

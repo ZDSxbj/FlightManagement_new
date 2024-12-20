@@ -16,6 +16,7 @@ release/homewidget.o
 release/main.o
 release/mainwindow.o
 release/mainwindowmng.o
+release/notice.o
 release/someGlobal.o
 release/userinfo.o
 release/usermnginfo.o
@@ -40,6 +41,7 @@ release/moc_flightmngwidget.o
 release/moc_homewidget.o
 release/moc_mainwindow.o
 release/moc_mainwindowmng.o
+release/moc_notice.o
 release/moc_userinfo.o
 release/moc_usermnginfo.o
 release/moc_usermngwidget.o

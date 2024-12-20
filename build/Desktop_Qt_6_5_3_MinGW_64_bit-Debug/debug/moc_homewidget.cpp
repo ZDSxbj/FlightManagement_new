@@ -52,11 +52,12 @@ static constexpr auto qt_meta_stringdata_CLASSHomeWidgetENDCLASS = QtMocHelpers:
     "swapDepartureAndDestination",
     "searchFlights",
     "checkAndSearchFlights",
+    "refresh",
     "hideAddressListIfApplicable"
 );
 #else  // !QT_MOC_HAS_STRING_DATA
 struct qt_meta_stringdata_CLASSHomeWidgetENDCLASS_t {
-    uint offsetsAndSizes[28];
+    uint offsetsAndSizes[30];
     char stringdata0[11];
     char stringdata1[28];
     char stringdata2[1];
@@ -70,7 +71,8 @@ struct qt_meta_stringdata_CLASSHomeWidgetENDCLASS_t {
     char stringdata10[28];
     char stringdata11[14];
     char stringdata12[22];
-    char stringdata13[28];
+    char stringdata13[8];
+    char stringdata14[28];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_CLASSHomeWidgetENDCLASS_t::offsetsAndSizes) + ofs), len 
@@ -89,7 +91,8 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSHomeWidgetENDCLASS_t qt_meta_st
         QT_MOC_LITERAL(116, 27),  // "swapDepartureAndDestination"
         QT_MOC_LITERAL(144, 13),  // "searchFlights"
         QT_MOC_LITERAL(158, 21),  // "checkAndSearchFlights"
-        QT_MOC_LITERAL(180, 27)   // "hideAddressListIfApplicable"
+        QT_MOC_LITERAL(180, 7),  // "refresh"
+        QT_MOC_LITERAL(188, 27)   // "hideAddressListIfApplicable"
     },
     "HomeWidget",
     "toggleAddressListVisibility",
@@ -104,6 +107,7 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSHomeWidgetENDCLASS_t qt_meta_st
     "swapDepartureAndDestination",
     "searchFlights",
     "checkAndSearchFlights",
+    "refresh",
     "hideAddressListIfApplicable"
 };
 #undef QT_MOC_LITERAL
@@ -116,7 +120,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSHomeWidgetENDCLASS[] = {
       11,       // revision
        0,       // classname
        0,    0, // classinfo
-       6,   14, // methods
+       7,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -124,16 +128,18 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSHomeWidgetENDCLASS[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    2,   50,    2, 0x08,    1 /* Private */,
-       7,    3,   55,    2, 0x08,    4 /* Private */,
-      10,    0,   62,    2, 0x08,    8 /* Private */,
-      11,    0,   63,    2, 0x08,    9 /* Private */,
-      12,    0,   64,    2, 0x08,   10 /* Private */,
-      13,    1,   65,    2, 0x08,   11 /* Private */,
+       1,    2,   56,    2, 0x08,    1 /* Private */,
+       7,    3,   61,    2, 0x08,    4 /* Private */,
+      10,    0,   68,    2, 0x08,    8 /* Private */,
+      11,    0,   69,    2, 0x08,    9 /* Private */,
+      12,    0,   70,    2, 0x08,   10 /* Private */,
+      13,    0,   71,    2, 0x08,   11 /* Private */,
+      14,    1,   72,    2, 0x08,   12 /* Private */,
 
  // slots: parameters
     QMetaType::Void, 0x80000000 | 3, 0x80000000 | 5,    4,    6,
     QMetaType::Void, 0x80000000 | 3, 0x80000000 | 5, 0x80000000 | 8,    4,    6,    9,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -166,6 +172,8 @@ Q_CONSTINIT const QMetaObject HomeWidget::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'checkAndSearchFlights'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'refresh'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'hideAddressListIfApplicable'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<QLineEdit *, std::false_type>
@@ -184,7 +192,8 @@ void HomeWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 2: _t->swapDepartureAndDestination(); break;
         case 3: _t->searchFlights(); break;
         case 4: _t->checkAndSearchFlights(); break;
-        case 5: _t->hideAddressListIfApplicable((*reinterpret_cast< std::add_pointer_t<QLineEdit*>>(_a[1]))); break;
+        case 5: _t->refresh(); break;
+        case 6: _t->hideAddressListIfApplicable((*reinterpret_cast< std::add_pointer_t<QLineEdit*>>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -208,7 +217,7 @@ void HomeWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
                 *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType::fromType< QListWidget* >(); break;
             }
             break;
-        case 5:
+        case 6:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
             case 0:
@@ -238,13 +247,13 @@ int HomeWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 7;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 7;
     }
     return _id;
 }

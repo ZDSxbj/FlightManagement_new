@@ -13,6 +13,7 @@
 #include <QButtonGroup>
 #include <QPropertyAnimation>
 #include <QToolTip>
+#include <QTimer>
 // 包含所有自定义窗口部件的头文件
 #include "homewidget.h"
 #include "Mine.h"
@@ -20,7 +21,7 @@
 #include "userinfo.h"
 #include "walletwindow.h"
 #include "chatwidget.h"
-
+#include "notice.h"
 #include "someGlobal.h"
 QT_BEGIN_NAMESPACE
 namespace Ui {

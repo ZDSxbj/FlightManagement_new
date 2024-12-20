@@ -1,12 +1,17 @@
 #include "Tickets.h"
 #include"Indent_detail.h"
 #include<QSqlError>
+#include<QApplication>
 Tickets::Tickets(const QString & name,QWidget *parent)
     : name(name),QWidget(parent)
 {
     setWindowTitle("航班购票系统");
     resize(800,600);
+    payCheckTimer = new QTimer(this);
+    connect(payCheckTimer, &QTimer::timeout, this, &Tickets::checkAndSearchFlights);
 
+    // 设置定时器时间间隔（例如每500毫秒检查一次）
+    payCheckTimer->start(500);
     // 创建内容区域
     queryINFO();
     createContentArea();
@@ -16,55 +21,129 @@ Tickets::Tickets(const QString & name,QWidget *parent)
 }
 void Tickets::createContentArea()
 {
-    contentWidget = new QWidget(this);
-    QVBoxLayout *contentLayout = new QVBoxLayout(contentWidget);
+    if (!contentWidget) {
+        contentWidget = new QWidget(this);
+        QVBoxLayout *contentLayout = new QVBoxLayout(contentWidget);
 
-    // 标题
-    QLabel *titleLabel = new QLabel("待出行车票", this);
-    titleLabel->setStyleSheet("font-size: 24px; color: #4a90e2;");
-    contentLayout->addWidget(titleLabel);
+        // 标题
 
-    // 划分线
-    QFrame *line = new QFrame(this);
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Sunken);
-    line->setStyleSheet("border: none; background-color:rgb(65, 157, 255); height: 2px;");
-    contentLayout->addWidget(line);
+        // QLabel *titleLabel = new QLabel((status==0)?"待出行订单":"已出行订单", this);
+        // titleLabel->setStyleSheet("font-size: 24px; color: #4a90e2;");
+        // contentLayout->addWidget(titleLabel);
 
-    // 创建滚动区域
-    QScrollArea *scrollArea = new QScrollArea(this);
-    scrollArea->setWidgetResizable(true);
+        // 划分线
+        QFrame *line = new QFrame(this);
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
+        line->setStyleSheet("border: none; background-color:rgb(65, 157, 255); height: 2px;");
+        contentLayout->addWidget(line);
 
-    // 创建滚动区域的内容区域
-    QWidget *scrollContent = new QWidget;
-    QVBoxLayout *scrollContentLayout = new QVBoxLayout(scrollContent);
-    scrollContentLayout->setSpacing(5); // 减少组件之间的间距
-    scrollContentLayout->setContentsMargins(5, 5, 5, 5); // 减少布局的边距
+        // 创建滚动区域
+        QScrollArea *scrollArea = new QScrollArea(this);
+        scrollArea->setWidgetResizable(true);
 
-    // 排序并添加 Indent_detail 小部件到滚动内容布局中
-    std::sort(q.begin(), q.end(), [](const Indent_detail* a, const Indent_detail* b) {
-        return a->getDepartureDate() < b->getDepartureDate();
-    });
-    if (QVBoxLayout* vboxLayout = dynamic_cast<QVBoxLayout*>(scrollContentLayout)) {
-        vboxLayout->setAlignment(Qt::AlignTop);
+        // 创建滚动区域的内容区域
+        QWidget *scrollContent = new QWidget;
+        QVBoxLayout *scrollContentLayout = new QVBoxLayout(scrollContent);
+        scrollContentLayout->setSpacing(5); // 减少组件之间的间距
+        scrollContentLayout->setContentsMargins(5, 5, 5, 5); // 减少布局的边距
+
+        // 排序并添加 Indent_detail 小部件到滚动内容布局中
+        std::sort(q.begin(), q.end(), [](const Indent_detail* a, const Indent_detail* b) {
+            return a->getDepartureDate() < b->getDepartureDate();
+        });
+        if (q.empty()) {
+            // 如果没有记录，添加一个居中的 "暂无记录" 标签
+            QLabel *noRecordsLabel = new QLabel("还没有要出行的航班哦", this);
+            noRecordsLabel->setAlignment(Qt::AlignCenter);
+            noRecordsLabel->setStyleSheet("color: gray; font-size: 20px;");
+            scrollContentLayout->addStretch();
+            scrollContentLayout->addWidget(noRecordsLabel);
+            scrollContentLayout->addStretch();
+        } else {
+            if (QVBoxLayout* vboxLayout = dynamic_cast<QVBoxLayout*>(scrollContentLayout)) {
+                vboxLayout->setAlignment(Qt::AlignTop);
+            }
+            for (auto widget : q) {
+                widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+                widget->update();
+                scrollContentLayout->addWidget(widget);
+            }
+        }
+
+        scrollArea->setWidget(scrollContent);
+        contentLayout->addWidget(scrollArea);
+
+        // 设置容器小部件的样式作为背景
+        contentWidget->setStyleSheet(
+            "background-color: #f0f0f0;"
+            "padding: 10px;"
+            );
+
+        // 将 contentWidget 添加到主布局中
+        //mainLayout()->addWidget(contentWidget);
+    } else {
+        // 如果 contentWidget 已经存在，则直接更新其内容
+        QVBoxLayout *contentLayout = static_cast<QVBoxLayout*>(contentWidget->layout());
+
+        // 清空现有内容
+        QLayoutItem *child;
+        while ((child = contentLayout->takeAt(0)) != nullptr) {
+            if (child->widget()) {
+                child->widget()->deleteLater();
+            }
+            delete child;
+        }
+
+
+        QFrame *line = new QFrame(this);
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
+        line->setStyleSheet("border: none; background-color:rgb(65, 157, 255); height: 2px;");
+        contentLayout->addWidget(line);
+
+        QScrollArea *scrollArea = new QScrollArea(this);
+        scrollArea->setWidgetResizable(true);
+
+        QWidget *scrollContent = new QWidget;
+        QVBoxLayout *scrollContentLayout = new QVBoxLayout(scrollContent);
+        scrollContentLayout->setSpacing(5);
+        scrollContentLayout->setContentsMargins(5, 5, 5, 5);
+
+        std::sort(q.begin(), q.end(), [](const Indent_detail* a, const Indent_detail* b) {
+            return a->getDepartureDate() < b->getDepartureDate();
+        });
+        if (q.empty()) {
+            // 如果没有记录，添加一个居中的 "暂无记录" 标签
+            QLabel *noRecordsLabel = new QLabel("还没有要出行的航班哦", this);
+            noRecordsLabel->setAlignment(Qt::AlignCenter);
+            noRecordsLabel->setStyleSheet("color: gray; font-size: 20px;");
+            scrollContentLayout->addStretch();
+            scrollContentLayout->addWidget(noRecordsLabel);
+            scrollContentLayout->addStretch();
+        } else {
+            if (QVBoxLayout* vboxLayout = dynamic_cast<QVBoxLayout*>(scrollContentLayout)) {
+                vboxLayout->setAlignment(Qt::AlignTop);
+            }
+            for (auto widget : q) {
+                widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+                widget->update();
+                scrollContentLayout->addWidget(widget);
+            }
+        }
+
+        scrollArea->setWidget(scrollContent);
+        contentLayout->addWidget(scrollArea);
+
+        contentWidget->setStyleSheet(
+            "background-color: #f0f0f0;"
+            "padding: 10px;"
+            );
     }
-    for (auto widget : q) {
-        widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        widget->update();
-        scrollContentLayout->addWidget(widget);
-    }
-
-    scrollArea->setWidget(scrollContent);
-    contentLayout->addWidget(scrollArea);
-
-    // 设置容器小部件的样式作为背景
-    contentWidget->setStyleSheet(
-        "background-color: #f0f0f0;"
-        "padding: 10px;"
-        );
 }
 void Tickets::queryINFO()
 {
+    q.clear();
     // QSqlDatabase dbco = QSqlDatabase::addDatabase("QODBC", "flightManagement"); // 使用唯一连接名
     // dbco.setHostName("127.0.0.1");
     // dbco.setPort(3306);
@@ -187,4 +266,46 @@ void Tickets::createMainLayout()
     mainLayout->addWidget(contentWidget);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     setLayout(mainLayout);
+}
+void Tickets::refresh() {
+    // 确保 contentWidget 已经被添加到布局中
+    if (!contentWidget) return;
+
+    // 清空现有内容
+    QLayout *layout = contentWidget->layout();
+    if (layout) {
+        QLayoutItem *child;
+        while ((child = layout->takeAt(0)) != nullptr) {
+            if (child->widget()) {
+                child->widget()->deleteLater();
+            }
+            delete child;
+        }
+    }
+
+    // 重新查询信息并创建内容区域
+    queryINFO();
+
+    // 调用 createContentArea 创建新的内容
+    createContentArea();
+
+    // 强制重新布局
+    mainLayout->activate();
+    contentWidget->updateGeometry();
+    contentWidget->update();
+
+    // 确保所有事件都被处理
+    QApplication::processEvents();
+}
+void Tickets::checkAndSearchFlights()
+{
+    if (isbuys) {
+        refresh();  // 调用 searchFlights 函数
+        isbuys = false;    // 置为 false，防止重复调用
+    }
+    if (isRefund) {
+        refresh();  // 调用 searchFlights 函数
+        isRefund = false;    // 置为 false，防止重复调用
+    }
+
 }

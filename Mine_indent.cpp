@@ -5,6 +5,7 @@
 #include"someGlobal.h"
 #include<QSqlError>
 #include<QTimer>
+#include<QApplication>
 Mine_indent::Mine_indent(const QString& id_card,const bool &ustatus, QWidget *parent)
     : card(id_card),status(ustatus),QWidget(parent)
 {
@@ -31,9 +32,9 @@ void Mine_indent::createContentArea()
 
         // 标题
 
-        QLabel *titleLabel = new QLabel((status==0)?"待出行订单":"已出行订单", this);
-        titleLabel->setStyleSheet("font-size: 24px; color: #4a90e2;");
-        contentLayout->addWidget(titleLabel);
+        // QLabel *titleLabel = new QLabel((status==0)?"待出行订单":"已出行订单", this);
+        // titleLabel->setStyleSheet("font-size: 24px; color: #4a90e2;");
+        // contentLayout->addWidget(titleLabel);
 
         // 划分线
         QFrame *line = new QFrame(this);
@@ -56,15 +57,25 @@ void Mine_indent::createContentArea()
         std::sort(q.begin(), q.end(), [](const Indent_detail* a, const Indent_detail* b) {
             return a->getDepartureDate() < b->getDepartureDate();
         });
-        if (QVBoxLayout* vboxLayout = dynamic_cast<QVBoxLayout*>(scrollContentLayout)) {
-            vboxLayout->setAlignment(Qt::AlignTop);
-        }
-        for (auto widget : q) {
-            widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-            widget->update();
-            scrollContentLayout->addWidget(widget);
-        }
 
+        if (q.empty()) {
+            // 如果没有记录，添加一个居中的 "暂无记录" 标签
+            QLabel *noRecordsLabel = new QLabel("暂无订单记录", this);
+            noRecordsLabel->setAlignment(Qt::AlignCenter);
+            noRecordsLabel->setStyleSheet("color: gray; font-size: 18px;");
+            scrollContentLayout->addStretch();
+            scrollContentLayout->addWidget(noRecordsLabel);
+            scrollContentLayout->addStretch();
+        } else {
+            if (QVBoxLayout* vboxLayout = dynamic_cast<QVBoxLayout*>(scrollContentLayout)) {
+                vboxLayout->setAlignment(Qt::AlignTop);
+            }
+            for (auto widget : q) {
+                widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+                widget->update();
+                scrollContentLayout->addWidget(widget);
+            }
+        }
         scrollArea->setWidget(scrollContent);
         contentLayout->addWidget(scrollArea);
 
@@ -89,10 +100,6 @@ void Mine_indent::createContentArea()
             delete child;
         }
 
-        // 重构内容（标题、划分线、滚动区域等）
-        QLabel *titleLabel = new QLabel("待出行订单", this);
-        titleLabel->setStyleSheet("font-size: 24px; color: #4a90e2;");
-        contentLayout->addWidget(titleLabel);
 
         QFrame *line = new QFrame(this);
         line->setFrameShape(QFrame::HLine);
@@ -111,10 +118,23 @@ void Mine_indent::createContentArea()
         std::sort(q.begin(), q.end(), [](const Indent_detail* a, const Indent_detail* b) {
             return a->getDepartureDate() < b->getDepartureDate();
         });
-        for (auto widget : q) {
-            widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-            widget->update();
-            scrollContentLayout->addWidget(widget);
+        if (q.empty()) {
+            // 如果没有记录，添加一个居中的 "暂无记录" 标签
+            QLabel *noRecordsLabel = new QLabel("暂无订单记录", this);
+            noRecordsLabel->setAlignment(Qt::AlignCenter);
+            noRecordsLabel->setStyleSheet("color: gray; font-size: 18px;");
+            scrollContentLayout->addStretch();
+            scrollContentLayout->addWidget(noRecordsLabel);
+            scrollContentLayout->addStretch();
+        } else {
+            if (QVBoxLayout* vboxLayout = dynamic_cast<QVBoxLayout*>(scrollContentLayout)) {
+                vboxLayout->setAlignment(Qt::AlignTop);
+            }
+            for (auto widget : q) {
+                widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+                widget->update();
+                scrollContentLayout->addWidget(widget);
+            }
         }
 
         scrollArea->setWidget(scrollContent);
@@ -250,109 +270,125 @@ void Mine_indent::queryINFO()
 // {
 //     return a->getDepartureDate() < b->getDepartureDate();
 // }
-void Mine_indent::handledeleteRequest(const QString& name,const QString& plane,const int &uclass,const QDateTime& time,const double& price,const QString& id_card)
+void Mine_indent::handledeleteRequest(const QString& name, const QString& plane, const int &uclass, const QDateTime& time, const double& price, const QString& id_card)
 {
-
-    QSqlQuery queryy;
-    if (!queryy.prepare("DELETE FROM orders WHERE realname = :realname AND flight_number = :flight_number")) {
-        qDebug() << "Failed to prepare delete query:" << queryy.lastError().text();
+    // 开始事务
+    if (!QSqlDatabase::database().transaction()) {
+        qDebug() << "Failed to start transaction.";
         return;
     }
 
-    queryy.bindValue(":realname", name);
-    queryy.bindValue(":flight_number", plane);
-
-    if (queryy.exec()) {
-        //refresh(); // 成功删除后刷新界面
-        QSqlQuery updateQuery;
-        /// classu;
-        if(uclass==3)
-        {
-            if (!updateQuery.prepare("UPDATE flights SET economy_available_seats = economy_available_seats + 1 WHERE flight_number = :flight_number AND departure_time= :departure_time")) {
-                qDebug() << "Failed to prepare update query:" << updateQuery.lastError().text();
-                QSqlDatabase::database().rollback(); // 删除成功但更新失败，回滚事务
-                return;
-            }
-        }
-        else if(uclass==2)
-        {
-            if (!updateQuery.prepare("UPDATE flights SET business_available_seats = business_available_seats + 1 WHERE flight_number = :flight_number AND departure_time= :departure_time")) {
-                qDebug() << "Failed to prepare update query:" << updateQuery.lastError().text();
-                QSqlDatabase::database().rollback(); // 删除成功但更新失败，回滚事务
-                return;
-            }
-        }
-        else
-        {
-            if (!updateQuery.prepare("UPDATE flights SET first_class_seat_seats = first_class_seat_seats + 1 WHERE flight_number = :flight_number AND departure_time= :departure_time")) {
-                qDebug() << "Failed to prepare update query:" << updateQuery.lastError().text();
-                QSqlDatabase::database().rollback(); // 删除成功但更新失败，回滚事务
-                return;
-            }
-        }
-        updateQuery.bindValue(":flight_number", plane);
-        updateQuery.bindValue(":departure_time",time);
-        if (updateQuery.exec()) {
-            // 提交事务
-            QSqlDatabase::database().commit();
-            refresh(); // 成功删除后刷新界面
-
-            QMessageBox *message = new QMessageBox(this);
-            message->setWindowTitle("成功!");
-            message->setText("删除成功并更新了航班信息！");
-            message->setStyleSheet(
-                "QMessageBox {"
-                "background-color: #f0f0f0;"
-                "font-size: 14px;"
-                "}"
-                "QMessageBox QLabel{"
-                "color: blue;"
-                "}"
-                "QMessageBox QPushButton{"
-                "background-color: #4CAF50;"
-                "color: white;"
-                "border: none;"
-                "padding: 5px 10px;"
-                "}"
-                );
-            message->setIcon(QMessageBox::Information);
-            message->exec();
-        } else {
-            qDebug() << "Failed to execute update query:" << updateQuery.lastError().text();
-            QSqlDatabase::database().rollback(); // 更新失败，回滚事务
-        }
-
-        updateQuery.prepare("INSERT INTO wallet_transactions (username, ID_card, transaction_type, amount, transaction_time, flight_number) "
-                            "VALUES (:username, :ID_card, :transaction_type, :amount, :transaction_time, :flight_number)");
-
-        updateQuery.bindValue(":username", name);
-        updateQuery.bindValue(":ID_card", id_card);
-        updateQuery.bindValue(":transaction_type","Refund");
-        updateQuery.bindValue(":amount", price);
-        updateQuery.bindValue(":transaction_time", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")); // 格式化日期时间字符串
-        updateQuery.bindValue(":flight_number", plane);
-
-        if (!updateQuery.exec()) {
-            qDebug() << "Failed to update wallet transaction:" << updateQuery.lastError().text();
-            QSqlDatabase::database().rollback();
-        }
-        updateQuery.prepare("UPDATE users SET balance = balance + :price WHERE Id_card =:id_card");
-        updateQuery.bindValue(":price",price);
-        updateQuery.bindValue(":id_card",id_card);
-        if (!updateQuery.exec()) {
-            qDebug() << "Failed to update wallet transaction:" << updateQuery.lastError().text();
-            QSqlDatabase::database().rollback();
-        }
-
-    } else {
-        qDebug() << "Failed to execute delete query:" << queryy.lastError().text();
-        QSqlDatabase::database().rollback(); // 更新失败，回滚事务
+    QSqlQuery deleteQuery;
+    if (!deleteQuery.prepare("DELETE FROM orders WHERE realname = :realname AND flight_number = :flight_number")) {
+        qDebug() << "Failed to prepare delete query:" << deleteQuery.lastError().text();
+        QSqlDatabase::database().rollback();
+        return;
     }
 
-    queryy.finish(); // 清理查询对象
-    isPay=true;
+    deleteQuery.bindValue(":realname", name);
+    deleteQuery.bindValue(":flight_number", plane);
 
+    if (!deleteQuery.exec()) {
+        qDebug() << "Failed to execute delete query:" << deleteQuery.lastError().text();
+        QSqlDatabase::database().rollback();
+        return;
+    }
+
+    QSqlQuery updateQuery;
+
+    // 更新航班座位信息
+    QString seatColumn;
+    switch (uclass) {
+    case 3: seatColumn = "economy_available_seats"; break;
+    case 2: seatColumn = "business_available_seats"; break;
+    default: seatColumn = "first_class_available_seats"; break;
+    }
+
+    if (!updateQuery.prepare(QString("UPDATE flights SET %1 = %1 + 1 WHERE flight_number = :flight_number AND departure_time = :departure_time").arg(seatColumn))) {
+        qDebug() << "Failed to prepare update query:" << updateQuery.lastError().text();
+        QSqlDatabase::database().rollback();
+        return;
+    }
+
+    updateQuery.bindValue(":flight_number", plane);
+    updateQuery.bindValue(":departure_time", time);
+
+    if (!updateQuery.exec()) {
+        qDebug() << "Failed to execute update query:" << updateQuery.lastError().text();
+        QSqlDatabase::database().rollback();
+        return;
+    }
+
+    // 插入退款交易记录
+    if (!updateQuery.prepare("INSERT INTO wallet_transactions (username, ID_card, transaction_type, amount, transaction_time, flight_number) "
+                             "VALUES (:username, :ID_card, :transaction_type, :amount, :transaction_time, :flight_number)")) {
+        qDebug() << "Failed to prepare insert into wallet_transactions:" << updateQuery.lastError().text();
+        QSqlDatabase::database().rollback();
+        return;
+    }
+
+    updateQuery.bindValue(":username", name);
+    updateQuery.bindValue(":ID_card", id_card);
+    updateQuery.bindValue(":transaction_type", "Refund");
+    updateQuery.bindValue(":amount", price);
+    updateQuery.bindValue(":transaction_time", QDateTime::currentDateTime());
+    updateQuery.bindValue(":flight_number", plane);
+
+    if (!updateQuery.exec()) {
+        qDebug() << "Failed to insert into wallet_transactions:" << updateQuery.lastError().text();
+        QSqlDatabase::database().rollback();
+        return;
+    }
+
+    // 更新用户余额
+    if (!updateQuery.prepare("UPDATE users SET balance = balance + :price WHERE ID_card = :id_card")) {
+        qDebug() << "Failed to prepare update user balance query:" << updateQuery.lastError().text();
+        QSqlDatabase::database().rollback();
+        return;
+    }
+
+    updateQuery.bindValue(":price", price);
+    updateQuery.bindValue(":id_card", id_card);
+
+    if (!updateQuery.exec()) {
+        qDebug() << "Failed to update user balance:" << updateQuery.lastError().text();
+        QSqlDatabase::database().rollback();
+        return;
+    }
+
+    // 提交事务
+    if (!QSqlDatabase::database().commit()) {
+        qDebug() << "Failed to commit transaction.";
+        QSqlDatabase::database().rollback();
+        return;
+    }
+
+    refresh(); // 成功删除后刷新界面
+
+    QMessageBox message(this);
+    message.setWindowTitle("成功!");
+    message.setText("删除成功并更新了航班信息！");
+    message.setStyleSheet(
+        "QMessageBox {"
+        "background-color: #f0f0f0;"
+        "font-size: 14px;"
+        "}"
+        "QMessageBox QLabel{"
+        "color: blue;"
+        "}"
+        "QMessageBox QPushButton{"
+        "background-color: #4CAF50;"
+        "color: white;"
+        "border: none;"
+        "padding: 5px 10px;"
+        "}"
+        );
+    message.setIcon(QMessageBox::Information);
+    message.exec();
+
+    isPay = true;
 }
+
 void Mine_indent::createMainLayout()
 {
     mainLayout = new QVBoxLayout(this);
@@ -362,18 +398,33 @@ void Mine_indent::createMainLayout()
 }
 void Mine_indent::refresh() {
     // 确保 contentWidget 已经被添加到布局中
-    QLayoutItem *child;
-    while ((child = contentWidget->layout()->takeAt(0)) != nullptr) {
-        if (child->widget())
-            child->widget()->deleteLater();
-        delete child;
+    if (!contentWidget) return;
+
+    // 清空现有内容
+    QLayout *layout = contentWidget->layout();
+    if (layout) {
+        QLayoutItem *child;
+        while ((child = layout->takeAt(0)) != nullptr) {
+            if (child->widget()) {
+                child->widget()->deleteLater();
+            }
+            delete child;
+        }
     }
 
     // 重新查询信息并创建内容区域
     queryINFO();
+
+    // 调用 createContentArea 创建新的内容
     createContentArea();
-    // 如果需要调整布局，可以在最后调用 update 或者 layout 的 activate 方法
-    mainLayout->update();
+
+    // 强制重新布局
+    mainLayout->activate();
+    contentWidget->updateGeometry();
+    contentWidget->update();
+
+    // 确保所有事件都被处理
+    QApplication::processEvents();
 }
 void Mine_indent:: handlecomplete()
 {
@@ -382,6 +433,7 @@ void Mine_indent:: handlecomplete()
 void Mine_indent::checkAndSearchFlights()
 {
     if (isbuy) {
+        qDebug()<<"刷新订单界面";
          refresh();  // 调用 searchFlights 函数
         isbuy = false;    // 置为 false，防止重复调用
     }

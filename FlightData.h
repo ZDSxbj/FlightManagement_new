@@ -40,6 +40,10 @@ struct FlightData {
     double first_class_price;
     QString refund_policy;
     QString baggage_policy;
+
+    bool operator==(const FlightData& other) const {
+        return flight_number == other.flight_number && departure_time == other.departure_time;
+    }
 };
 
 #endif // FLIGHTDATA_H
