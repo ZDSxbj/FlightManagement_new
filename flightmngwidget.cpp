@@ -76,6 +76,10 @@ FlightmngWidget::FlightmngWidget(QWidget *parent)
 
     // 创建新增航班按钮
     addFlightButton = new QPushButton("+新增航班", this);
+
+    // 连接新增航班按钮的点击事件
+    connect(addFlightButton, &QPushButton::clicked, this, &FlightmngWidget::showAddFlightWidget);
+
     buttonLayout->addWidget(addFlightButton);  // 将按钮添加到水平布局的左侧
     // 设置按钮的对齐方式为左对齐
     buttonLayout->setAlignment(addFlightButton, Qt::AlignLeft);
@@ -164,6 +168,9 @@ void FlightmngWidget::loadFlightsFromDatabase() {
     QSqlQuery query;
     query.exec("SELECT * FROM Flights");
 
+    if(!allFlights.empty()){
+        allFlights.clear();
+    }
     while (query.next()) {
         FlightData data;
         data.flight_id = query.value("flight_id").toInt();
@@ -177,7 +184,7 @@ void FlightmngWidget::loadFlightsFromDatabase() {
         data.departure_terminal = query.value("departure_terminal").toString();
         data.arrival_terminal = query.value("arrival_terminal").toString();
         data.departure_time = query.value("departure_time").toDateTime();
-        data.arrival_time = query.value("arrival_time").toDateTime();
+        data.arrival_time = query.value("arrival_time").toDateTime();     
         data.duration = query.value("duration").toTime();
         data.same_day_arrival = query.value("same_day_arrival").toBool();
         data.status = query.value("status").toString();
@@ -216,7 +223,7 @@ void FlightmngWidget::onConfirmButtonClicked() {
     scrollContentLayout->setAlignment(Qt::AlignTop); // 设置布局内容顶部对齐
 
     // 根据输入筛选航班信息
-    for (const auto &flight : allFlights) {
+    for (auto &flight : allFlights) {
         if (flight.departure_city == departure &&
             flight.arrival_city == destination &&
             flight.departure_time.date() == date) {
@@ -271,7 +278,7 @@ void FlightmngWidget::populateScrollAreaWithFlights() {
     scrollContentLayout->setAlignment(Qt::AlignTop); // 设置布局内容顶部对齐
 
     // 将所有航班信息添加到滚动页面上
-    for (const auto &flight : allFlights) {
+    for (auto &flight : allFlights) {
         flightinfomng *infoWidget = new flightinfomng(flight, scrollContentWidget);
         connect (infoWidget,&flightinfomng::iscanceled,this,&FlightmngWidget::handlecancel);
         scrollContentLayout->addWidget(infoWidget);
@@ -296,4 +303,22 @@ void FlightmngWidget::handlecancel(const FlightData& data)
     }
 
 
+}
+
+
+void FlightmngWidget::showAddFlightWidget() {
+    AddFlightWidget *addFlightWidget = new AddFlightWidget(nullptr);
+    addFlightWidget->setWindowTitle("新增航班");
+    addFlightWidget->setWindowModality(Qt::ApplicationModal);  // 设置为模态窗口
+    connect(addFlightWidget, &AddFlightWidget::flightAdded, this, &FlightmngWidget::refreshFlightList); // 连接信号
+    addFlightWidget->show();
+}
+
+void FlightmngWidget::refreshFlightList() {
+    // 重新加载航班数据
+    loadFlightsFromDatabase();
+    // 对航班数据进行排序
+    sortFlightsByDepartureTime();
+    // 刷新界面
+    populateScrollAreaWithFlights();
 }

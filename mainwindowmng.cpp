@@ -1,6 +1,6 @@
 #include "mainwindowmng.h"
 #include<QWidget>
-
+#include"Login.h"
 MainWindowMng::MainWindowMng(QWidget *parent)
     : QMainWindow(parent),
     buttonGroup(new QButtonGroup(this)),
@@ -104,6 +104,25 @@ MainWindowMng::MainWindowMng(QWidget *parent)
     titlelayout->addStretch(); // 使应用名称靠左对齐
     // switchButton样式
     switchButton=new QPushButton("切换账号");
+    connect(switchButton, &QPushButton::clicked, [this]() {
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle("确认");
+        msgBox.setText("你确定要退出吗？");
+        msgBox.setIcon(QMessageBox::Question);
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No); // 设置默认按钮为“否”
+
+        // 显示消息框并获取用户选择的结果
+        int ret = msgBox.exec();
+
+        // 根据用户的选择执行相应的操作
+        if (ret == QMessageBox::Yes)
+        {
+            Login *w = new Login();
+            w->show();
+            this->deleteLater();
+        }
+    });
     switchButton->setStyleSheet("QPushButton {"
                                 "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #FF9800, stop:1 #FFB74D);"
                                 "color: white;"

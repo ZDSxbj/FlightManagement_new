@@ -307,5 +307,10 @@ void Tickets::checkAndSearchFlights()
         refresh();  // 调用 searchFlights 函数
         isRefund = false;    // 置为 false，防止重复调用
     }
+    if (ischanged) {
+        refresh();  // 调用 searchFlights 函数
+        ischanged = false;    // 置为 false，防止重复调用
+    }
+
 
 }

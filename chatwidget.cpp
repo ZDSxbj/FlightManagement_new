@@ -258,8 +258,7 @@ void ChatWidget::onEvaluateButtonClicked()
         QString evaluation = evaluationDialog->getEvaluation(); // 获取评价结果
         qDebug() << "User evaluated: " << evaluation;
 
-        // 获取当前用户ID和客服ID
-        QString curUser = QString::number(3);  // 假设用户ID
+
         QString customerServiceId = QString::number(1);  // 假设客服ID
 
         // 查询最近的一条消息，假设评价是针对最后一条记录

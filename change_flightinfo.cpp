@@ -360,6 +360,7 @@ void  change_flightinfo::onclicked(const QString &type) {
     dbc.close();
     emit completed();
     isPay=true;
+    ischanged=true;
     this->close();
 }
 
@@ -380,7 +381,7 @@ bool change_flightinfo::deleteOldOrderAndUpdateSeats(QSqlQuery &deleteOrderQuery
     deleteOrderQuery.prepare("DELETE FROM orders WHERE realname= :realname AND flight_number = :flight_number AND departure_time=:departure_time");
     deleteOrderQuery.bindValue(":realname", real_name);
     deleteOrderQuery.bindValue(":flight_number", fli_number);
-    deleteOrderQuery.bindValue(":departure_time", data.departure_time);
+    deleteOrderQuery.bindValue(":departure_time", departure_date);
     qDebug()<<real_name<<" "<<fli_number;
     if (!deleteOrderQuery.exec()) {
         qDebug() << "Failed to execute delete order query:" << deleteOrderQuery.lastError().text();
@@ -414,7 +415,7 @@ bool change_flightinfo::createNewOrder(QSqlQuery &query, const QString &type) {
     query.bindValue(":seat_class", type);
     query.bindValue(":price", now_price);
     query.bindValue(":status", "upcoming");
-    query.bindValue(":departure_time", departure_date.toString("yyyy-MM-dd hh:mm:ss")); // 格式化日期时间字符串
+    query.bindValue(":departure_time", data.departure_time.toString("yyyy-MM-dd hh:mm:ss")); // 格式化日期时间字符串
 
     if (!query.exec()) {
         qDebug() << "Failed to create new order:" << query.lastError().text();

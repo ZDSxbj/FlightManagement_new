@@ -23,6 +23,7 @@
 #include "MyEventFilter.h"
 #include "flightinfomng.h"
 #include "FlightData.h"
+#include "addflightwidget.h"
 class FlightmngWidget : public QWidget
 {
     Q_OBJECT
@@ -42,6 +43,12 @@ private slots:
 
     /// @brief 将所有航班信息添加到滚动页面上。
     void populateScrollAreaWithFlights();
+
+    //展示添加增加航班页面
+    void showAddFlightWidget();
+
+    //新增航班后刷新数组和页面
+    void refreshFlightList();
 private:
     QLineEdit *departureInput;
     QLineEdit *destinationInput;

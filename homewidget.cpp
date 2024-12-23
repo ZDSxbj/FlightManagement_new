@@ -97,7 +97,7 @@ HomeWidget::HomeWidget(QWidget *parent)
     // 如果没有记录，添加一个居中的 "暂无记录" 标签
     QLabel *noRecordsLabel = new QLabel("请搜索您想要乘坐的航班", this);
     noRecordsLabel->setAlignment(Qt::AlignCenter);
-    noRecordsLabel->setStyleSheet("color: gray; font-size: 18px;");
+    noRecordsLabel->setStyleSheet("color: gray; font-size: 20px;");
     scrollContentLayout->addStretch();
     scrollContentLayout->addWidget(noRecordsLabel);
     scrollContentLayout->addStretch();
@@ -239,7 +239,7 @@ void HomeWidget::searchFlights()
         // 如果没有记录，添加一个居中的 "暂无记录" 标签
         QLabel *noRecordsLabel = new QLabel("请搜索您想要的航班", this);
         noRecordsLabel->setAlignment(Qt::AlignCenter);
-        noRecordsLabel->setStyleSheet("color: gray; font-size: 18px;");
+        noRecordsLabel->setStyleSheet("color: gray; font-size: 20px;");
         scrollContentLayout->addStretch();
         scrollContentLayout->addWidget(noRecordsLabel);
         scrollContentLayout->addStretch();

@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>Far Cry 5 Josephs Word View.png</file>
+        <file>980.jpg</file>
+        <file>980(1).jpg</file>
+    </qresource>
+</RCC>

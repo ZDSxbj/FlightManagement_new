@@ -18,7 +18,7 @@ Changed::Changed(QWidget *parent,
                  const QString& fli_class,
                  const double& cost,
                  const QString& card)
-    : QWidget(parent),
+    :QWidget(parent),
     id_card(card),
     real_name(realname),
     depart(departure),

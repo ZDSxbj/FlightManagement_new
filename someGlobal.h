@@ -7,4 +7,5 @@ extern bool isbuy;
 extern bool whoUse;
 extern bool isbuys;
 extern bool isRefund;
+extern bool ischanged;
 #endif // SOMEGLOBAL_H

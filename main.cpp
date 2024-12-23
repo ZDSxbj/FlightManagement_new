@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
+#include"Login.h"
 QSqlDatabase dbcon; //数据库
 
 int main(int argc, char *argv[])
@@ -15,7 +16,8 @@ int main(int argc, char *argv[])
     dbcon.setDatabaseName("Local instance MySQL8");
     dbcon.setUserName("root");  // 添加用户名
     dbcon.setPassword("ZXJsnd4697");  // 添加密码
-
+    // 添加编码设置
+    dbcon.exec("SET NAMES utf8mb4");
     bool ok = dbcon.open();
     if (!ok) {
         qDebug() << "Error, persondatabase 数据库文件打开失败！" << dbcon.lastError().text();
@@ -34,11 +36,11 @@ int main(int argc, char *argv[])
     }
 
     // //用户界面
-    MainWindow w;
-
-    //管理员界面
+    // MainWindow w;
+    Login *w= new Login();
+    // // 管理员界面
     // MainWindowMng w;
     // whoUse=false;
-    w.show();
+    w->show();
     return a.exec();
 }

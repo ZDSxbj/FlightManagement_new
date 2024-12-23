@@ -56,11 +56,13 @@ static constexpr auto qt_meta_stringdata_CLASSFlightmngWidgetENDCLASS = QtMocHel
     "FlightData",
     "data",
     "loadFlightsFromDatabase",
-    "populateScrollAreaWithFlights"
+    "populateScrollAreaWithFlights",
+    "showAddFlightWidget",
+    "refreshFlightList"
 );
 #else  // !QT_MOC_HAS_STRING_DATA
 struct qt_meta_stringdata_CLASSFlightmngWidgetENDCLASS_t {
-    uint offsetsAndSizes[36];
+    uint offsetsAndSizes[40];
     char stringdata0[16];
     char stringdata1[28];
     char stringdata2[1];
@@ -79,6 +81,8 @@ struct qt_meta_stringdata_CLASSFlightmngWidgetENDCLASS_t {
     char stringdata15[5];
     char stringdata16[24];
     char stringdata17[30];
+    char stringdata18[20];
+    char stringdata19[18];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_CLASSFlightmngWidgetENDCLASS_t::offsetsAndSizes) + ofs), len 
@@ -101,7 +105,9 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSFlightmngWidgetENDCLASS_t qt_me
         QT_MOC_LITERAL(213, 10),  // "FlightData"
         QT_MOC_LITERAL(224, 4),  // "data"
         QT_MOC_LITERAL(229, 23),  // "loadFlightsFromDatabase"
-        QT_MOC_LITERAL(253, 29)   // "populateScrollAreaWithFlights"
+        QT_MOC_LITERAL(253, 29),  // "populateScrollAreaWithFlights"
+        QT_MOC_LITERAL(283, 19),  // "showAddFlightWidget"
+        QT_MOC_LITERAL(303, 17)   // "refreshFlightList"
     },
     "FlightmngWidget",
     "toggleAddressListVisibility",
@@ -120,7 +126,9 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSFlightmngWidgetENDCLASS_t qt_me
     "FlightData",
     "data",
     "loadFlightsFromDatabase",
-    "populateScrollAreaWithFlights"
+    "populateScrollAreaWithFlights",
+    "showAddFlightWidget",
+    "refreshFlightList"
 };
 #undef QT_MOC_LITERAL
 #endif // !QT_MOC_HAS_STRING_DATA
@@ -132,7 +140,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSFlightmngWidgetENDCLASS[] = {
       11,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+      10,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -140,14 +148,16 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSFlightmngWidgetENDCLASS[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    2,   62,    2, 0x08,    1 /* Private */,
-       7,    3,   67,    2, 0x08,    4 /* Private */,
-      10,    0,   74,    2, 0x08,    8 /* Private */,
-      11,    1,   75,    2, 0x08,    9 /* Private */,
-      12,    0,   78,    2, 0x08,   11 /* Private */,
-      13,    1,   79,    2, 0x08,   12 /* Private */,
-      16,    0,   82,    2, 0x08,   14 /* Private */,
-      17,    0,   83,    2, 0x08,   15 /* Private */,
+       1,    2,   74,    2, 0x08,    1 /* Private */,
+       7,    3,   79,    2, 0x08,    4 /* Private */,
+      10,    0,   86,    2, 0x08,    8 /* Private */,
+      11,    1,   87,    2, 0x08,    9 /* Private */,
+      12,    0,   90,    2, 0x08,   11 /* Private */,
+      13,    1,   91,    2, 0x08,   12 /* Private */,
+      16,    0,   94,    2, 0x08,   14 /* Private */,
+      17,    0,   95,    2, 0x08,   15 /* Private */,
+      18,    0,   96,    2, 0x08,   16 /* Private */,
+      19,    0,   97,    2, 0x08,   17 /* Private */,
 
  // slots: parameters
     QMetaType::Void, 0x80000000 | 3, 0x80000000 | 5,    4,    6,
@@ -156,6 +166,8 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSFlightmngWidgetENDCLASS[] = {
     QMetaType::Void, 0x80000000 | 3,    4,
     QMetaType::Void,
     QMetaType::Void, 0x80000000 | 14,   15,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -193,6 +205,10 @@ Q_CONSTINIT const QMetaObject FlightmngWidget::staticMetaObject = { {
         // method 'loadFlightsFromDatabase'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'populateScrollAreaWithFlights'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'showAddFlightWidget'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'refreshFlightList'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -212,6 +228,8 @@ void FlightmngWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         case 5: _t->handlecancel((*reinterpret_cast< std::add_pointer_t<FlightData>>(_a[1]))); break;
         case 6: _t->loadFlightsFromDatabase(); break;
         case 7: _t->populateScrollAreaWithFlights(); break;
+        case 8: _t->showAddFlightWidget(); break;
+        case 9: _t->refreshFlightList(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -265,13 +283,13 @@ int FlightmngWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 10;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 8)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 10;
     }
     return _id;
 }

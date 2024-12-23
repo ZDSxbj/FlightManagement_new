@@ -62,7 +62,7 @@ void Mine_indent::createContentArea()
             // 如果没有记录，添加一个居中的 "暂无记录" 标签
             QLabel *noRecordsLabel = new QLabel("暂无订单记录", this);
             noRecordsLabel->setAlignment(Qt::AlignCenter);
-            noRecordsLabel->setStyleSheet("color: gray; font-size: 18px;");
+            noRecordsLabel->setStyleSheet("color: gray; font-size: 20px;");
             scrollContentLayout->addStretch();
             scrollContentLayout->addWidget(noRecordsLabel);
             scrollContentLayout->addStretch();
@@ -122,7 +122,7 @@ void Mine_indent::createContentArea()
             // 如果没有记录，添加一个居中的 "暂无记录" 标签
             QLabel *noRecordsLabel = new QLabel("暂无订单记录", this);
             noRecordsLabel->setAlignment(Qt::AlignCenter);
-            noRecordsLabel->setStyleSheet("color: gray; font-size: 18px;");
+            noRecordsLabel->setStyleSheet("color: gray; font-size: 20px;");
             scrollContentLayout->addStretch();
             scrollContentLayout->addWidget(noRecordsLabel);
             scrollContentLayout->addStretch();
@@ -150,7 +150,6 @@ void Mine_indent::createContentArea()
 void Mine_indent::queryINFO()
 {
     q.clear(); // 清空之前的订单小部件列表
-
     // QSqlDatabase db = QSqlDatabase::database();
     // if (!db.isOpen())
     // {
@@ -387,6 +386,7 @@ void Mine_indent::handledeleteRequest(const QString& name, const QString& plane,
     message.exec();
 
     isPay = true;
+
 }
 
 void Mine_indent::createMainLayout()

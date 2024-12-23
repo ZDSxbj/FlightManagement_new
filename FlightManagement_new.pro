@@ -11,10 +11,14 @@ CONFIG += c++17
 
 SOURCES += \
     Changed.cpp \
+    Forget.cpp \
     Indent_detail.cpp \
+    Login.cpp \
     Mine.cpp \
     Mine_indent.cpp \
+    Register.cpp \
     Tickets.cpp \
+    addflightwidget.cpp \
     buywidget.cpp \
     change_flightinfo.cpp \
     chatmanager.cpp \
@@ -38,11 +42,15 @@ SOURCES += \
 HEADERS += \
     Changed.h \
     FlightData.h \
+    Forget.h \
     Indent_detail.h \
+    Login.h \
     Mine.h \
     Mine_indent.h \
     MyEventFilter.h \
+    Register.h \
     Tickets.h \
+    addflightwidget.h \
     buywidget.h \
     change_flightinfo.h \
     chatmanager.h \
@@ -64,6 +72,9 @@ HEADERS += \
     walletwindow.h
 
 FORMS += \
+    Forget.ui \
+    Login.ui \
+    Register.ui \
     mainwindow.ui
 
 TRANSLATIONS += \
@@ -75,3 +86,6 @@ CONFIG += embed_translations
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    Resource.qrc

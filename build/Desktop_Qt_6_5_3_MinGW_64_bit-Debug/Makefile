@@ -368,6 +368,7 @@ Makefile: ../../FlightManagement_new.pro ../../../../Qt/6.5.3/mingw_64/mkspecs/w
 		../../../../Qt/6.5.3/mingw_64/lib/Qt6Core.prl \
 		../../../../Qt/6.5.3/mingw_64/lib/Qt6EntryPoint.prl \
 		../../../../Qt/6.5.3/mingw_64/mkspecs/features/build_pass.prf \
+		../../Resource.qrc \
 		debug/qmake_qmake_qm_files.qrc \
 		release/qmake_qmake_qm_files.qrc
 	$(QMAKE) -o Makefile ..\..\FlightManagement_new.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
@@ -669,6 +670,7 @@ Makefile: ../../FlightManagement_new.pro ../../../../Qt/6.5.3/mingw_64/mkspecs/w
 ../../../../Qt/6.5.3/mingw_64/lib/Qt6Core.prl:
 ../../../../Qt/6.5.3/mingw_64/lib/Qt6EntryPoint.prl:
 ../../../../Qt/6.5.3/mingw_64/mkspecs/features/build_pass.prf:
+../../Resource.qrc:
 debug/qmake_qmake_qm_files.qrc:
 release/qmake_qmake_qm_files.qrc:
 qmake: FORCE

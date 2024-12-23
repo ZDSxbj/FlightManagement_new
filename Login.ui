@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Login</class>
+ <widget class="QDialog" name="Login">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>390</width>
+    <height>527</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* 设置 QMainWindow 的背景和字体 */
+QDialog{
+    background: rgb(255, 255, 255); /* 背景色为白色 */
+    font-size: 15px; /* 设置字体大小 */
+    font-family: &quot;MingLiU-ExtB&quot;, &quot;Arial&quot;, sans-serif; /* 设置字体，确保平台支持 */
+background-image: url(:/new/prefix1/980(1).jpg);
+ background-size: cover; /* 背景图像按比例缩放并填充容器 */
+    background-position: center; /* 背景图像居中显示 */
+    background-repeat: no-repeat; /* 不重复背景 */
+}
+
+/* 设置 QFrame 背景图片 */
+QFrame {
+    border: solid 10px rgba(0, 0, 0, 1); /* 黑色实线边框，宽度为 10px */
+    background-repeat: no-repeat; /* 不重复 */
+    background-position: center; /* 居中显示背景图片 */
+}
+
+/* 设置 QLineEdit 样式 */
+QLineEdit {
+    color: #8d98a1; /* 输入文本的颜色 */
+    background-color: #405361; /* 输入框背景色 */
+    font-size: 16px; /* 字体大小 */
+    border-style: outset; /* 外凸边框样式 */
+    border-radius: 10px; /* 圆角边框 */
+    font-family: &quot;MingLiU-ExtB&quot;, &quot;Arial&quot;, sans-serif; /* 设置字体 */
+}
+
+/* 设置 QPushButton 样式 */
+QPushButton {
+    background: #ced1d8; /* 按钮背景色 */
+    border-style: outset; /* 外凸边框样式 */
+    border-radius: 10px; /* 圆角边框 */
+    font-family: &quot;MingLiU-ExtB&quot;, &quot;Arial&quot;, sans-serif; /* 设置字体 */
+}
+
+/* 设置 QPushButton 按下时的样式 */
+QPushButton:pressed {
+    background-color: rgb(0, 170, 255); /* 按钮按下时背景颜色 */
+    border-style: inset; /* 按钮按下时边框样式 */
+    font-family: &quot;MingLiU-ExtB&quot;, &quot;Arial&quot;, sans-serif; /* 设置字体 */
+}
+
+/* 设置 QCheckBox 样式 */
+QCheckBox {
+    background: rgba(85, 170, 255, 0); /* 背景透明 */
+    color: white; /* 文字颜色 */
+    font-family: &quot;MingLiU-ExtB&quot;, &quot;Arial&quot;, sans-serif; /* 设置字体 */
+}
+
+/* 设置 QLabel 样式 */
+QLabel {
+    background: rgba(85, 170, 255, 0); /* 背景透明 */
+    
+}
+</string>
+  </property>
+  <widget class="QFrame" name="frame">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>110</y>
+     <width>351</width>
+     <height>311</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>50</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+      <pointsize>18</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>登录/</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::LinksAccessibleByMouse|Qt::TextEditable</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>90</y>
+      <width>61</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+      <pointsize>16</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>身份号：</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>120</y>
+      <width>171</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_2">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>190</y>
+      <width>171</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>160</y>
+      <width>41</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+      <pointsize>16</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>密码：</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>250</y>
+      <width>161</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>登录</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="forget">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>226</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Adobe Devanagari</family>
+      <pointsize>10</pointsize>
+      <italic>true</italic>
+      <bold>true</bold>
+      <underline>true</underline>
+     </font>
+    </property>
+    <property name="text">
+     <string>忘记密码</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="regis">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>50</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+      <pointsize>18</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>注册</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="registe">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>10</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+      <pointsize>12</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>管理员入口</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

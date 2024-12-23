@@ -1,6 +1,6 @@
 #include "flightinfomng.h"
 #include <QDebug>
-flightinfomng::flightinfomng(const FlightData &data, QWidget *parent)
+flightinfomng::flightinfomng(FlightData &data, QWidget *parent)
     : QWidget(parent), data(data)
 {
 
@@ -45,7 +45,7 @@ flightinfomng::flightinfomng(const FlightData &data, QWidget *parent)
     leftVerticalLayout->addWidget(airlineLabel);
 
     // 创建出发时间标签，只显示日期部分
-    QLabel *depatureDataLabel = new QLabel(data.departure_time.date().toString("yyyy-MM-dd")); // 使用 "yyyy-MM-dd" 格式化为 "年-月-日"
+    depatureDataLabel = new QLabel(data.departure_time.date().toString("yyyy-MM-dd")); // 使用 "yyyy-MM-dd" 格式化为 "年-月-日"
     depatureDataLabel->setStyleSheet("color: #333; font-size: 16px;");
     leftVerticalLayout->addWidget(depatureDataLabel);
     flightNumberLabel = new QLabel(data.flight_number);
@@ -221,6 +221,7 @@ flightinfomng::flightinfomng(const FlightData &data, QWidget *parent)
         "}"
         );
 
+    connect(editTimeButton, &QPushButton::clicked, this, &flightinfomng::onEditTimeButtonClicked); //修改时间槽函数
     // 设置 "取消航班" 按钮样式
     cancelFlightButton->setStyleSheet(
         "QPushButton {"
